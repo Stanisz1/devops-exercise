@@ -1,52 +1,56 @@
-version: '3'
+version: '3.8'
 
 services:
   redis:
     build:
       context: redis
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - redis_db:/data/redis_db
     networks:
-      mynetwork:
-        ipv4_address: 172.19.0.2
+     - backend
 
   back:
     build:
       context: back
       dockerfile: Dockerfile
     environment:
-      REDIS_SERVER: 172.19.0.2:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CLIENT_API_URL: http://127.0.0.1:3000
     depends_on:
       - redis
     ports:
-      - "4000:4000"
+      - "4000:8888"
     networks:
-      mynetwork:
-        ipv4_address: 172.19.0.3
+     - backend
+     - frontend
 
   front:
     build:
       context: front
       dockerfile: Dockerfile
     environment:
-      BACKEND_API_URL: http://172.19.0.3
-      CLIENT_API_URL: http://172.19.0.4
+      BACKEND_API_URL: http://127.0.0.1:4000
     depends_on:
       - back
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://172.19.0.4:3000/ping"]  
+      test: curl  -f "http://127.0.0.1:80||exit 1  
       interval: 30s
       timeout: 10s
       retries: 3
     ports:
-      - "3000:3000"
+      - "3000:80"
     networks:
-      mynetwork:
-        ipv4_address: 172.19.0.4
+      - frontend
+
+
+volumes: 
+  redis_db:    
 
 networks:
-  mynetwork:
-    ipam:
-      config:
-        - subnet: 172.19.0.0/24
+  backend:
+  frontend:
