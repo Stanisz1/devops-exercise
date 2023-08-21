@@ -38,7 +38,6 @@ services:
     depends_on:
       - redis
       - back
-      - nginx
     healthcheck:
       test: curl  -f "http://127.0.0.1:3000||exit 1  
       interval: 30s
@@ -56,9 +55,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-    depends_on:
-      - back
-      - redis
+      - "443:443"
+    links:
+      - back:back
+      - redis:redis
+      - front:front
+    
     # networks:
     #   - backend
     #   - frontend
