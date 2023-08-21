@@ -10,8 +10,8 @@ services:
       - "6379:6379"
     volumes:
       - redis_db:/data/redis_db
-    networks:
-     - backend
+    # networks:
+    #  - backend
 
   back:
     build:
@@ -24,10 +24,10 @@ services:
     depends_on:
       - redis
     ports:
-      - "4000:8888"
-    networks:
-     - backend
-     - frontend
+      - "4000:4000"
+    # networks:
+    #  - backend
+    #  - frontend
 
   front:
     build:
@@ -36,21 +36,36 @@ services:
     environment:
       BACKEND_API_URL: http://127.0.0.1:4000
     depends_on:
+      - redis
       - back
+      - nginx
     healthcheck:
-      test: curl  -f "http://127.0.0.1:80||exit 1  
+      test: curl  -f "http://127.0.0.1:3000||exit 1  
       interval: 30s
       timeout: 10s
       retries: 3
     ports:
-      - "3000:80"
-    networks:
-      - frontend
+      - "3000:3000"
+    # networks:
+    #   - frontend
 
+
+  nginx:
+    build:
+      context: nginx 
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - back
+      - redis
+    # networks:
+    #   - backend
+    #   - frontend
 
 volumes: 
   redis_db:    
 
-networks:
-  backend:
-  frontend:
+# networks:
+#   backend:
+#   frontend:
