@@ -1,3 +1,3 @@
-FROM redis:7.0.12
+FROM redis:latest
 CMD [ "redis-server" ]
 HEALTHCHECK CMD ["docker-healthcheck"]

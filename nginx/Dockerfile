@@ -1,5 +1,5 @@
-FROM nginx:1.25.2
+FROM nginx:latest
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY 000default.conf /etc/nginx/nginx.conf
 

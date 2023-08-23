@@ -8,8 +8,7 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
-    volumes:
-      - redis_db:/data/redis_db
+   
     # networks:
     #  - backend
 
@@ -18,13 +17,13 @@ services:
       context: back
       dockerfile: Dockerfile
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      CLIENT_API_URL: http://127.0.0.1:3000
+      REDIS_SERVER: redis:6379
+      
     depends_on:
       - redis
     ports:
       - "4000:4000"
+     
     # networks:
     #  - backend
     #  - frontend
@@ -34,17 +33,21 @@ services:
       context: front
       dockerfile: Dockerfile
     environment:
-      BACKEND_API_URL: http://127.0.0.1:4000
+      CLIENT_API_URL: http://frontend
+      BACKEND_API_URL: http://backend
+      
     depends_on:
       - redis
       - back
-    healthcheck:
-      test: curl  -f "http://127.0.0.1:3000||exit 1  
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    # healthcheck:
+    #   test: curl  -f "http://localhost:3000||exit 1  
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
     ports:
       - "3000:3000"
+    volumes:
+      - "./app:/usr/src/app"
     # networks:
     #   - frontend
 
@@ -56,17 +59,16 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    links:
-      - back:back
-      - redis:redis
-      - front:front
+    depends_on:
+      - front
+      - back
+      - redis
     
     # networks:
     #   - backend
     #   - frontend
 
-volumes: 
-  redis_db:    
+  
 
 # networks:
 #   backend:
