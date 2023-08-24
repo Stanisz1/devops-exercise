@@ -71,7 +71,7 @@ jobs:
         run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build -t ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/nginx:latest -f ./redis/Dockerfile .
+          docker build -t ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/nginx:latest -f ./nginx/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/nginx:latest
 
