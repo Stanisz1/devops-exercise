@@ -8,9 +8,6 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
-   
-    # networks:
-    #  - backend
 
   back:
     build:
@@ -23,10 +20,7 @@ services:
       - redis
     ports:
       - "4000:4000"
-     
-    # networks:
-    #  - backend
-    #  - frontend
+
 
   front:
     build:
@@ -48,8 +42,7 @@ services:
       - "3000:3000"
     volumes:
       - "./app:/usr/src/app"
-    # networks:
-    #   - frontend
+    
 
 
   nginx:
@@ -63,13 +56,3 @@ services:
       - front
       - back
       - redis
-    
-    # networks:
-    #   - backend
-    #   - frontend
-
-  
-
-# networks:
-#   backend:
-#   frontend:

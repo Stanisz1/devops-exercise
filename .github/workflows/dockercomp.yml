@@ -1,0 +1,55 @@
+name: dock_copm
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '*'
+  workflow_dispatch:
+  
+jobs:
+
+  bump-version:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@master
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO_OWNER: ${{ github.repository_owner }}
+    
+    - name: version-tag
+      id: tag
+      uses: anothrNick/github-tag-action@master # if we use 1 there is a too-be-fixed bug https://github.com/anothrNick/github-tag-action/actions/runs/3139501775/jobs/5099976842#step:1:35 as alternative we could use v1
+      env:
+          VERBOSE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs: 
+        tag: ${{ steps.tag.outputs.tag }}
+    
+
+  build-docker:
+    needs: [bump-version]
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3.3.0
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2.1.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.ACTION_TOKEN }}
+    
+    - name: build devexfront
+      run: |
+        repository_owner=${{ github.repository_owner }}
+        repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
+        docker compose build -t ghcr.io/${repository_owner_lowercase}/devexfront:${{ github.sha }} -t  ghcr.io/${repository_owner_lowercase}/devexfront:${{ needs.bump-version.outputs.tag }}  -f .docker-compose.yaml
+        docker compose push ghcr.io/${repository_owner_lowercase}/devexfront:${{ github.sha }} 
+        docker compose push ghcr.io/${repository_owner_lowercase}/devexfront:${{ needs.bump-version.outputs.tag }}
+        
+
+  
