@@ -1,81 +1,32 @@
-name: dock_copm
+name: redis
+
 on:
   push:
     branches:
       - master
-    tags-ignore:
-      - '*'
   workflow_dispatch:
-  
+env:
+  OWNER: "${{ github.repository_owner }}"
+
 jobs:
-
-  bump-version:
+  _redis:
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
-    steps:
-    - uses: actions/checkout@master
-    - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPO_OWNER: ${{ github.repository_owner }}
-    
-    - name: version-tag
-      id: tag
-      uses: anothrNick/github-tag-action@master # if we use 1 there is a too-be-fixed bug https://github.com/anothrNick/github-tag-action/actions/runs/3139501775/jobs/5099976842#step:1:35 as alternative we could use v1
-      env:
-          VERBOSE: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    outputs: 
-        tag: ${{ steps.tag.outputs.tag }}
-    
 
-  build-dockers:
-    needs: [bump-version]
-    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3.3.0
-    # - name: Login to GitHub Container Registry
-    #   uses: docker/login-action@v2.1.0
-    #   with:
-    #     registry: ghcr.io
-    #     username: ${{ github.repository_owner }}
-    #     password: ${{ secrets.ACTION_TOKEN }}
-    
-     name: build redis
+      - uses: actions/checkout@v3.3.0
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v2.1.0
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.ACTION_TOKEN }}
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+      - name: build redis
         run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
           docker build -t ghcr.io/${repository_owner_lowercase}/redis:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/redis:latest -f ./redis/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/redis:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/redis:latest
-
-     name: build back
-        run: |
-          repository_owner=${{ github.repository_owner }}
-          repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:latest -f ./back/Dockerfile .
-          docker push ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }}
-          docker push ghcr.io/${repository_owner_lowercase}/back:latest
-
-     name: build front
-        run: |
-          repository_owner=${{ github.repository_owner }}
-          repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build -t ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/front:latest -f ./front/Dockerfile .
-          docker push ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }}
-          docker push ghcr.io/${repository_owner_lowercase}/front:latest
-
-     name: build nginx
-        run: |
-          repository_owner=${{ github.repository_owner }}
-          repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build -t ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/nginx:latest -f ./nginx/Dockerfile .
-          docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }}
-          docker push ghcr.io/${repository_owner_lowercase}/nginx:latest
-
-
-
-
-  
