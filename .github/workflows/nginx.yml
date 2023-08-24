@@ -1,0 +1,32 @@
+name: nginx
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+env:
+  OWNER: "${{ github.repository_owner }}"
+
+jobs:
+  _nginx:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3.3.0
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v2.1.0
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.ACTION_TOKEN }}
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+      - name: build nginx
+        run: |
+          repository_owner=${{ github.repository_owner }}
+          repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
+          docker build -t ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/nginx:latest -f ./nginx/Dockerfile .
+          docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }}
+          docker push ghcr.io/${repository_owner_lowercase}/nginx:latest

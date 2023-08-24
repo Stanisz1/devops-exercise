@@ -1,0 +1,32 @@
+name: front
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+env:
+  OWNER: "${{ github.repository_owner }}"
+
+jobs:
+  _front:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3.3.0
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v2.1.0
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.ACTION_TOKEN }}
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+      - name: build front
+        run: |
+          repository_owner=${{ github.repository_owner }}
+          repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
+          docker build -t ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/front:latest -f ./front/Dockerfile .
+          docker push ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }}
+          docker push ghcr.io/${repository_owner_lowercase}/front:latest
