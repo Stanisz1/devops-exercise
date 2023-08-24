@@ -31,7 +31,7 @@ jobs:
         tag: ${{ steps.tag.outputs.tag }}
     
 
-  build-docker:
+  build-dockers:
     needs: [bump-version]
     runs-on: ubuntu-20.04
     steps:
