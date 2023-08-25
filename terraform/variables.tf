@@ -4,7 +4,7 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.3.0"
+    container_image = "ghcr.io/stanisz1/redis:latest"
     container_name  = "redis"
   }
 }
@@ -14,7 +14,7 @@ variable "deployment_back" {
     app_name        = "back"
     name            = "back"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.3.0"
+    container_image = "ghcr.io/stanisz1/back:latest"
     container_name  = "back"
   }
 }
@@ -24,7 +24,7 @@ variable "deployment_front" {
     app_name        = "front"
     name            = "front"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/front:0.3.0"
+    container_image = "ghcr.io/stanisz1/front:latest"
     container_name  = "front"
   }
 }
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.3.0"
+    container_image = "ghcr.io/stanisz1/nginx:latest"
     container_name  = "nginx"
   }
 }
