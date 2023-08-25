@@ -48,6 +48,7 @@ jobs:
    
     - name: build redis
       working-directory: redis
+      if: ${{ github.event_name != 'pull_request' }}
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
@@ -57,10 +58,11 @@ jobs:
 
     - name: build back
       working-directory: back
+      if: ${{ github.event_name != 'pull_request' }}
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build  . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} 
+          docker build  . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} -f ./back/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }}
       
@@ -68,6 +70,7 @@ jobs:
 
     - name: build front
       working-directory: front
+      if: ${{ github.event_name != 'pull_request' }}
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
@@ -78,6 +81,7 @@ jobs:
 
     - name: build nginx
       working-directory: nginx
+      if: ${{ github.event_name != 'pull_request' }}
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
