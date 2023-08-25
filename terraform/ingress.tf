@@ -1,27 +1,113 @@
-resource "kubernetes_ingress_v1" "devops_exercise_ingress" {
+resource "kubernetes_ingress_v1" "redis_ingress" {
   # depends_on = [
   #   kubernetes_service_v1.devops_exercise_service
   # ]
   metadata {
-    name = var.ingress.name
+    name = var.ingress_redis.name
   }
 
   spec {
-    ingress_class_name = var.ingress.name
+    ingress_class_name = var.ingress_redis.name
     rule {
-      host = var.ingress.host
+      host = var.ingress_redis.host
       http {
         path {
           backend {
             service {
-              name = var.service.name
+              name = var.service_redis.name
               port {
-                number = var.ingress.port
+                number = var.ingress_redis.port
               }
             }
           }
-          path      = var.ingress.path
-          path_type = var.ingress.path_type
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_ingress_v1" "back_ingress" {
+  # depends_on = [
+  #   kubernetes_service_v1.devops_exercise_service
+  # ]
+  metadata {
+    name = var.ingress_back.name
+  }
+
+  spec {
+    ingress_class_name = var.ingress_back.name
+    rule {
+      host = var.ingress_back.host
+      http {
+        path {
+          backend {
+            service {
+              name = var.service_back.name
+              port {
+                number = var.ingress_back.port
+              }
+            }
+          }
+          path      = var.ingress_back.path
+          path_type = var.ingress_back.path_type
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_ingress_v1" "front_ingress" {
+  # depends_on = [
+  #   kubernetes_service_v1.devops_exercise_service
+  # ]
+  metadata {
+    name = var.ingress_front.name
+  }
+
+  spec {
+    ingress_class_name = var.ingress_front.name
+    rule {
+      host = var.ingress_front.host
+      http {
+        path {
+          backend {
+            service {
+              name = var.service_front.name
+              port {
+                number = var.ingress_front.port
+              }
+            }
+          }
+          path      = var.ingress_front.path
+          path_type = var.ingress_front.path_type
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_ingress_v1" "nginx_ingress" {
+  # depends_on = [
+  #   kubernetes_service_v1.devops_exercise_service
+  # ]
+  metadata {
+    name = var.ingress_nginx.name
+  }
+
+  spec {
+    ingress_class_name = var.ingress_nginx.name
+    rule {
+      host = var.ingress_nginx.host
+      http {
+        path {
+          backend {
+            service {
+              name = var.service_nginx.name
+              port {
+                number = var.ingress_nginx.port
+              }
+            }
+          }
         }
       }
     }
