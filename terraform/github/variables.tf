@@ -2,7 +2,10 @@ variable "tf_token" {}
 
 variable "files" {
   default = [
-    "deployment.tf",
+    "redisdep.tf",
+    "frontdep.tf",
+    "backdep.tf",
+    "nginxdep.tf",
     "service.tf",
     "ingress.tf",
     "provider.tf",

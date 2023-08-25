@@ -1,6 +1,6 @@
 variable "deployment_redis" {
   description = "Deployment-related variables_redis"
-  redis = {
+  default  = {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
@@ -10,7 +10,7 @@ variable "deployment_redis" {
 }
 variable "deployment_back" {
   description = "Deployment-related variables_back"
-  back = {
+  default  = {
     app_name        = "back"
     name            = "back"
     replica_number  = 1
@@ -20,7 +20,7 @@ variable "deployment_back" {
 }
 variable "deployment_front" {
   description = "Deployment-related variables_front"
-  front = {
+  default  = {
     app_name        = "front"
     name            = "front"
     replica_number  = 1
@@ -30,7 +30,7 @@ variable "deployment_front" {
 }
 variable "deployment_nginx" {
   description = "Deployment-related variables_nginx"
-  nginx = {
+  default  = {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
@@ -42,7 +42,7 @@ variable "deployment_nginx" {
 
 variable "service_redis" {
   description = "Service-related variables_redis"
-  redis = {
+  default  = {
     name        = "redisservice"
     port        = 6379
     target_port = 6379
@@ -50,7 +50,7 @@ variable "service_redis" {
 }
 variable "service_back" {
   description = "Service-related variables_back"
-  back = {
+  default  = {
     name        = "backservice"
     port        = 4000
     target_port = 4000
@@ -58,7 +58,7 @@ variable "service_back" {
 }
 variable "service_front" {
   description = "Service-related variables_front"
-  front = {
+  default  = {
     name        = "frontservice"
     port        = 3000
     target_port = 3000
@@ -66,7 +66,7 @@ variable "service_front" {
 }
 variable "service_nginx" {
   description = "Service-related variables_nginx"
-  nginx = {
+  default  = {
     name        = "nginxservice"
     port        = 80
     target_port = 80
@@ -75,7 +75,7 @@ variable "service_nginx" {
 
 variable "ingress_redis" {
   description = "Ingress-related variables"
-  redis = {
+  default  = {
     name      = "redisingress"
     host      = "redisterra.com"
     port      = 6379
@@ -83,7 +83,7 @@ variable "ingress_redis" {
 }
 
 variable "ingress_back" {
-  back = {
+  default  = {
     name      = "backingress"
     host      = "backterra.com"
     port      = 4000
@@ -92,7 +92,7 @@ variable "ingress_back" {
   }
 }
 variable "ingress_front" {
-  front = {
+  default  = {
     name      = "frontingress"
     host      = "frontterra.com"
     port      =  3000
@@ -101,7 +101,7 @@ variable "ingress_front" {
   }
 }
 variable "ingress_nginx" {
-  nginx = {
+  default  = {
     name      = "nginxingress"
     host      = "nginxterra.com"
     port      = 80

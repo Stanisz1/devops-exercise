@@ -17,7 +17,7 @@ resource "kubernetes_service_v1" "redis_service" {
 
 resource "kubernetes_service_v1" "back_service" {
   depends_on = [
-    kubernetes_deployment_v1.backdepdep
+    kubernetes_deployment_v1.backdep
   ]
   metadata {
     name = var.service_back.name
