@@ -61,7 +61,7 @@ jobs:
           docker build -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} -f ./back/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }}
-      working-directory: ./black ./app
+      working-directory: ./devops-exercise
 
 
     - name: build front
@@ -71,7 +71,7 @@ jobs:
           docker build -t ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/front:${{ needs.bump-version.outputs.tag }} -f ./front/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/front:${{ needs.bump-version.outputs.tag }}
-      working-directory: ./front
+      working-directory: ./devops-exercise
 
     - name: build nginx
       run: |
@@ -80,4 +80,4 @@ jobs:
           docker build -t ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/nginx:${{ needs.bump-version.outputs.tag }} -f ./nginx/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ needs.bump-version.outputs.tag }}
-      working-directory: ./nginx
+      working-directory: ./devops-exercise
