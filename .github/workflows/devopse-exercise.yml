@@ -47,19 +47,19 @@ jobs:
     
    
     - name: build redis
+      working-directory: redis
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          cd ./redis
           docker build -t ghcr.io/${repository_owner_lowercase}/redis:${{ github.sha }} -t  ghcr.io/${repository_owner_lowercase}/redis:${{ needs.bump-version.outputs.tag }}  -f ./redis/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/redis:${{ github.sha }} 
           docker push ghcr.io/${repository_owner_lowercase}/redis:${{ needs.bump-version.outputs.tag }}
 
     - name: build back
+      working-directory: back
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          cd ./black
           docker build -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} -f ./back/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }}
@@ -67,20 +67,20 @@ jobs:
 
 
     - name: build front
+      working-directory: front
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          cd ./front
           docker build -t ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/front:${{ needs.bump-version.outputs.tag }} -f ./front/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/front:${{ needs.bump-version.outputs.tag }}
       
 
     - name: build nginx
+      working-directory: nginx
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          cd ./nginx
           docker build -t ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/nginx:${{ needs.bump-version.outputs.tag }} -f ./nginx/Dockerfile .
           docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ needs.bump-version.outputs.tag }}
