@@ -52,21 +52,20 @@ jobs:
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build  . -f Dockerfile  -t ghcr.io/${repository_owner_lowercase}/redis:${{ github.sha }} -t  ghcr.io/${repository_owner_lowercase}/redis:latest${{ needs.bump-version.outputs.tag }} 
+          docker build  . -f Dockerfile  -t ghcr.io/${repository_owner_lowercase}/redis:${{ github.sha }} -t  ghcr.io/${repository_owner_lowercase}/redis:${{ needs.bump-version.outputs.tag }} 
           docker push ghcr.io/${repository_owner_lowercase}/redis:${{ github.sha }} 
           docker push ghcr.io/${repository_owner_lowercase}/redis:${{ needs.bump-version.outputs.tag }}
-          docker push ghcr.io/${repository_owner_lowercase}/redis:latest
 
+          
     - name: build back
       working-directory: back
       if: ${{ github.event_name != 'pull_request' }}
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build  . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:latest${{ needs.bump-version.outputs.tag }} 
+          docker build  . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} 
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }}
-          docker push ghcr.io/${repository_owner_lowercase}/back:latest
       
 
 
@@ -76,10 +75,9 @@ jobs:
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/front:latest${{ needs.bump-version.outputs.tag }} 
+          docker build . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/front:${{ needs.bump-version.outputs.tag }} 
           docker push ghcr.io/${repository_owner_lowercase}/front:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/front:${{ needs.bump-version.outputs.tag }}
-          docker push ghcr.io/${repository_owner_lowercase}/front:latest
       
 
     - name: build nginx
@@ -91,5 +89,4 @@ jobs:
           docker build . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/nginx:${{ needs.bump-version.outputs.tag }} 
           docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/nginx:${{ needs.bump-version.outputs.tag }}
-          docker push ghcr.io/${repository_owner_lowercase}/nginx:latest
       
