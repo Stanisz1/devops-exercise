@@ -23,6 +23,14 @@ resource "kubernetes_deployment_v1" "frontdep" {
           image             = var.deployment_front.container_image
           name              = var.deployment_front.container_name
           image_pull_policy = "Always"
+           env {
+            name  = "BACKEND_API_URL"
+            value = "http://backend"  # Update this with the actual Back service name and port
+          }
+          env {
+            name  = "CLIENT_API_URL"
+            value = "http//frontend"  # Update this with the actual Back service name and port
+          }
         }
       }
     }

@@ -49,19 +49,19 @@ resource "kubernetes_service_v1" "front_service" {
   }
 }
 
-resource "kubernetes_service_v1" "nginx_service" {
-  depends_on = [
-    kubernetes_deployment_v1.nginxdep
-  ]
-  metadata {
-    name = var.service_nginx.name
-  }
-  spec {
-    selector = local.labels
+# resource "kubernetes_service_v1" "nginx_service" {
+#   depends_on = [
+#     kubernetes_deployment_v1.nginxdep
+#   ]
+#   metadata {
+#     name = var.service_nginx.name
+#   }
+#   spec {
+#     selector = local.labels
 
-    port {
-      port        = var.service_nginx.port
-      target_port = var.service_nginx.target_port
-    }
-  }
-}
+#     port {
+#       port        = var.service_nginx.port
+#       target_port = var.service_nginx.target_port
+#     }
+#   }
+# }

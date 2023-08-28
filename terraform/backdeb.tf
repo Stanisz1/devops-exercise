@@ -23,6 +23,10 @@ resource "kubernetes_deployment_v1" "backdep" {
           image             = var.deployment_back.container_image
           name              = var.deployment_back.container_name
           image_pull_policy = "Always"
+          env {
+            name  = "REDIS_SERVER"
+            value = "redis:6379" 
+          }
         }
       }
     }

@@ -28,22 +28,22 @@ variable "deployment_front" {
     container_name  = "front"
   }
 }
-variable "deployment_nginx" {
-  description = "Deployment-related variables_nginx"
-  default  = {
-    app_name        = "nginx"
-    name            = "nginx"
-    replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.8.0"
-    container_name  = "nginx"
-  }
-}
+# variable "deployment_nginx" {
+#   description = "Deployment-related variables_nginx"
+#   default  = {
+#     app_name        = "nginx"
+#     name            = "nginx"
+#     replica_number  = 1
+#     container_image = "ghcr.io/stanisz1/nginx:0.8.0"
+#     container_name  = "nginx"
+#   }
+# }
 
 
 variable "service_redis" {
   description = "Service-related variables_redis"
   default  = {
-    name        = "redisservice"
+    name        = "redis"
     port        = 6379
     target_port = 6379
   }
@@ -51,7 +51,7 @@ variable "service_redis" {
 variable "service_back" {
   description = "Service-related variables_back"
   default  = {
-    name        = "backservice"
+    name        = "back"
     port        = 4000
     target_port = 4000
   }
@@ -59,25 +59,25 @@ variable "service_back" {
 variable "service_front" {
   description = "Service-related variables_front"
   default  = {
-    name        = "frontservice"
+    name        = "front"
     port        = 3000
     target_port = 3000
   }
 }
-variable "service_nginx" {
-  description = "Service-related variables_nginx"
-  default  = {
-    name        = "nginxservice"
-    port        = 80
-    target_port = 80
-  }
-}
+# variable "service_nginx" {
+#   description = "Service-related variables_nginx"
+#   default  = {
+#     name        = "nginx"
+#     port        = 8090
+#     target_port = 8090
+#   }
+# }
 
 variable "ingress_redis" {
   description = "Ingress-related variables"
   default  = {
-    name      = "redisingress"
-    host      = "redisterra.com"
+    name      = "redis"
+    host      = "redis"
     port      = 6379
     path      = "/"
     path_type = "Prefix"
@@ -86,8 +86,8 @@ variable "ingress_redis" {
 
 variable "ingress_back" {
   default  = {
-    name      = "backingress"
-    host      = "backterra.com"
+    name      = "back"
+    host      = "back"
     port      = 4000
     path      = "/"
     path_type = "Prefix"
@@ -95,22 +95,22 @@ variable "ingress_back" {
 }
 variable "ingress_front" {
   default  = {
-    name      = "frontingress"
-    host      = "frontterra.com"
+    name      = "front"
+    host      = "front"
     port      =  3000
     path      = "/"
     path_type = "Prefix"
   }
 }
-variable "ingress_nginx" {
-  default  = {
-    name      = "nginxingress"
-    host      = "nginxterra.com"
-    port      = 80
-    path      = "/"
-    path_type = "Prefix"
-  }
-}
+# variable "ingress_nginx" {
+#   default  = {
+#     name      = "nginx"
+#     host      = "nginxterra.com"
+#     port      = 8090
+#     path      = "/"
+#     path_type = "Prefix"
+#   }
+# }
 
 variable "lables_app_name" {
   default = "devopse-exersice"
