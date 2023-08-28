@@ -4,7 +4,7 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.7.0"
+    container_image = "ghcr.io/stanisz1/redis:0.8.0"
     container_name  = "redis"
   }
 }
@@ -14,7 +14,7 @@ variable "deployment_back" {
     app_name        = "back"
     name            = "back"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.7.0"
+    container_image = "ghcr.io/stanisz1/back:0.8.0"
     container_name  = "back"
   }
 }
@@ -24,7 +24,7 @@ variable "deployment_front" {
     app_name        = "front"
     name            = "front"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/front:0.7.0"
+    container_image = "ghcr.io/stanisz1/front:0.8.0"
     container_name  = "front"
   }
 }
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.7.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.8.0"
     container_name  = "nginx"
   }
 }
@@ -79,6 +79,8 @@ variable "ingress_redis" {
     name      = "redisingress"
     host      = "redisterra.com"
     port      = 6379
+    path      = "/"
+    path_type = "Prefix"
   }
 }
 
@@ -87,7 +89,7 @@ variable "ingress_back" {
     name      = "backingress"
     host      = "backterra.com"
     port      = 4000
-    path      = "/api"
+    path      = "/"
     path_type = "Prefix"
   }
 }
@@ -105,6 +107,8 @@ variable "ingress_nginx" {
     name      = "nginxingress"
     host      = "nginxterra.com"
     port      = 80
+    path      = "/"
+    path_type = "Prefix"
   }
 }
 

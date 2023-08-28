@@ -20,6 +20,8 @@ resource "kubernetes_ingress_v1" "redis_ingress" {
               }
             }
           }
+          path      = var.ingress_redis.path
+          path_type = var.ingress_redis.path_type
         }
       }
     }
@@ -28,7 +30,7 @@ resource "kubernetes_ingress_v1" "redis_ingress" {
 
 resource "kubernetes_ingress_v1" "back_ingress" {
   # depends_on = [
-  #   kubernetes_service_v1.devops_exercise_service
+  #   redis_ingress
   # ]
   metadata {
     name = var.ingress_back.name
@@ -58,7 +60,7 @@ resource "kubernetes_ingress_v1" "back_ingress" {
 
 resource "kubernetes_ingress_v1" "front_ingress" {
   # depends_on = [
-  #   kubernetes_service_v1.devops_exercise_service
+  #   back_ingress
   # ]
   metadata {
     name = var.ingress_front.name
@@ -108,8 +110,11 @@ resource "kubernetes_ingress_v1" "nginx_ingress" {
               }
             }
           }
+          path      = var.ingress_nginx.path
+          path_type = var.ingress_nginx.path_type
         }
       }
     }
   }
 }
+
