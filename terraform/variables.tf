@@ -28,16 +28,16 @@ variable "deployment_front" {
     container_name  = "front"
   }
 }
-# variable "deployment_nginx" {
-#   description = "Deployment-related variables_nginx"
-#   default  = {
-#     app_name        = "nginx"
-#     name            = "nginx"
-#     replica_number  = 1
-#     container_image = "ghcr.io/stanisz1/nginx:0.8.0"
-#     container_name  = "nginx"
-#   }
-# }
+variable "deployment_nginx" {
+  description = "Deployment-related variables_nginx"
+  default  = {
+    app_name        = "nginx"
+    name            = "nginx"
+    replica_number  = 1
+    container_image = "ghcr.io/stanisz1/nginx:0.8.0"
+    container_name  = "nginx"
+  }
+}
 
 
 variable "service_redis" {
@@ -64,14 +64,14 @@ variable "service_front" {
     target_port = 3000
   }
 }
-# variable "service_nginx" {
-#   description = "Service-related variables_nginx"
-#   default  = {
-#     name        = "nginx"
-#     port        = 8090
-#     target_port = 8090
-#   }
-# }
+variable "service_nginx" {
+  description = "Service-related variables_nginx"
+  default  = {
+    name        = "nginx"
+    port        = 8090
+    target_port = 8090
+  }
+}
 
 variable "ingress_redis" {
   description = "Ingress-related variables"
@@ -102,15 +102,15 @@ variable "ingress_front" {
     path_type = "Prefix"
   }
 }
-# variable "ingress_nginx" {
-#   default  = {
-#     name      = "nginx"
-#     host      = "nginxterra.com"
-#     port      = 8090
-#     path      = "/"
-#     path_type = "Prefix"
-#   }
-# }
+variable "ingress_nginx" {
+  default  = {
+    name      = "nginx"
+    host      = "nginxterra.com"
+    port      = 80
+    path      = "/"
+    path_type = "Prefix"
+  }
+}
 
 variable "lables_app_name" {
   default = "devopse-exersice"

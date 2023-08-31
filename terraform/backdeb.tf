@@ -1,5 +1,7 @@
 resource "kubernetes_deployment_v1" "backdep" {
 
+
+
   metadata {
     name = var.deployment_back.name
     labels = {
@@ -32,3 +34,4 @@ resource "kubernetes_deployment_v1" "backdep" {
     }
   }
 }
+

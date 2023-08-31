@@ -1,5 +1,7 @@
 resource "kubernetes_deployment_v1" "frontdep" {
 
+
+
   metadata {
     name = var.deployment_front.name
     labels = {
