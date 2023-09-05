@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.8.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.14.0"
     container_name  = "nginx"
   }
 }
@@ -68,8 +68,8 @@ variable "service_nginx" {
   description = "Service-related variables_nginx"
   default  = {
     name        = "nginx"
-    port        = 8090
-    target_port = 8090
+    port        = 8080
+    target_port = 8080
   }
 }
 
@@ -87,7 +87,7 @@ variable "ingress_redis" {
 variable "ingress_back" {
   default  = {
     name      = "back"
-    host      = "back"
+    host      = "backend"
     port      = 4000
     path      = "/"
     path_type = "Prefix"
@@ -96,7 +96,7 @@ variable "ingress_back" {
 variable "ingress_front" {
   default  = {
     name      = "front"
-    host      = "front"
+    host      = "frontend"
     port      =  3000
     path      = "/"
     path_type = "Prefix"
@@ -105,8 +105,8 @@ variable "ingress_front" {
 variable "ingress_nginx" {
   default  = {
     name      = "nginx"
-    host      = "nginxterra.com"
-    port      = 80
+    host      = "nginx"
+    port      = 8080
     path      = "/"
     path_type = "Prefix"
   }
