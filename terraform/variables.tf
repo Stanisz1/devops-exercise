@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.14.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.15.0"
     container_name  = "nginx"
   }
 }
@@ -68,8 +68,8 @@ variable "service_nginx" {
   description = "Service-related variables_nginx"
   default  = {
     name        = "nginx"
-    port        = 8080
-    target_port = 8080
+    port        = 80
+    target_port = 80
   }
 }
 
@@ -106,7 +106,7 @@ variable "ingress_nginx" {
   default  = {
     name      = "nginx"
     host      = "nginx"
-    port      = 8080
+    port      = 80
     path      = "/"
     path_type = "Prefix"
   }
