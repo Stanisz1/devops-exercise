@@ -89,33 +89,33 @@ resource "kubernetes_ingress_v1" "front_ingress" {
   }
 }
 
-# resource "kubernetes_ingress_v1" "nginx_ingress" {
-#   # depends_on = [
-#   #   kubernetes_service_v1.devops_exercise_service
-#   # ]
-#   metadata {
-#     name = var.ingress_nginx.name
-#   }
+resource "kubernetes_ingress_v1" "nginx_ingress" {
+  # depends_on = [
+  #   kubernetes_service_v1.nginx_service
+  # ]
+  metadata {
+    name = var.ingress_nginx.name
+  }
 
-#   spec {
-#     ingress_class_name = var.ingress_nginx.name
-#     rule {
-#       host = var.ingress_nginx.host
-#       http {
-#         path {
-#           backend {
-#             service {
-#               name = var.service_nginx.name
-#               port {
-#                 number = var.ingress_nginx.port
-#               }
-#             }
-#           }
-#           path      = var.ingress_nginx.path
-#           path_type = var.ingress_nginx.path_type
-#         }
-#       }
-#     }
-#   }
-# }
+  spec {
+    ingress_class_name = var.ingress_nginx.name
+    rule {
+      host = var.ingress_nginx.host
+      http {
+        path {
+          backend {
+            service {
+              name = var.service_nginx.name
+              port {
+                number = var.ingress_nginx.port
+              }
+            }
+          }
+          path      = var.ingress_nginx.path
+          path_type = var.ingress_nginx.path_type
+        }
+      }
+    }
+  }
+}
 

@@ -68,8 +68,8 @@ variable "service_nginx" {
   description = "Service-related variables_nginx"
   default  = {
     name        = "nginx"
-    port        = 8080
-    target_port = 8080
+    port        = 80
+    target_port = 80
   }
 }
 
@@ -106,7 +106,7 @@ variable "ingress_nginx" {
   default  = {
     name      = "nginx"
     host      = "nginx"
-    port      = 8080
+    port      = 80
     path      = "/"
     path_type = "Prefix"
   }
