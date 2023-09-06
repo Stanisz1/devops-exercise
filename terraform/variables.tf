@@ -4,28 +4,28 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.19.0"
+    container_image = "ghcr.io/stanisz1/redis:0.20.0"
     container_name  = "redis"
   }
 }
 variable "deployment_back" {
-  description = "Deployment-related variables_back"
+  description = "Deployment-related variables_backend"
   default  = {
-    app_name        = "back"
-    name            = "back"
+    app_name        = "backend"
+    name            = "backend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.19.0"
+    container_image = "ghcr.io/stanisz1/back:0.20.0"
     container_name  = "back"
   }
 }
 variable "deployment_front" {
-  description = "Deployment-related variables_front"
+  description = "Deployment-related variables_frontend"
   default  = {
-    app_name        = "front"
-    name            = "front"
+    app_name        = "frontend"
+    name            = "frontend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/front:0.19.0"
-    container_name  = "front"
+    container_image = "ghcr.io/stanisz1/end:0.20.0"
+    container_name  = "end"
   }
 }
 variable "deployment_nginx" {
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.19.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.20.0"
     container_name  = "nginx"
   }
 }
@@ -49,19 +49,19 @@ variable "service_redis" {
   }
 }
 variable "service_back" {
-  description = "Service-related variables_back"
+  description = "Service-related variables_backend"
   default  = {
-    name        = "back"
+    name        = "backend"
     port        = 4000
-    target_port = 80
+    target_port = 4000
   }
 }
 variable "service_front" {
-  description = "Service-related variables_front"
+  description = "Service-related variables_frontend"
   default  = {
-    name        = "front"
+    name        = "frontend"
     port        = 3000
-    target_port = 80
+    target_port = 3000
   }
 }
 variable "service_nginx" {
@@ -84,18 +84,18 @@ variable "ingress_redis" {
   }
 }
 
-variable "ingress_back" {
+variable "ingress_backend" {
   default  = {
-    name      = "back"
+    name      = "backend"
     host      = "backend"
     port      = 4000
     path      = "/"
     path_type = "Prefix"
   }
 }
-variable "ingress_front" {
+variable "ingress_frontend" {
   default  = {
-    name      = "front"
+    name      = "frontend"
     host      = "frontend"
     port      =  3000
     path      = "/"
