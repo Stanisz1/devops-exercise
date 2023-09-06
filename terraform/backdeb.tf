@@ -29,6 +29,10 @@ resource "kubernetes_deployment_v1" "backdep" {
             name  = "REDIS_SERVER"
             value = "redis:6379" 
           }
+          port {
+            
+            container_port =  4000
+          }
         }
       }
     }

@@ -90,9 +90,9 @@ resource "kubernetes_ingress_v1" "front_ingress" {
 }
 
 resource "kubernetes_ingress_v1" "nginx_ingress" {
-  # depends_on = [
-  #   kubernetes_service_v1.nginx_service
-  # ]
+  depends_on = [
+    kubernetes_service_v1.nginx_service
+  ]
   metadata {
     name = var.ingress_nginx.name
   }

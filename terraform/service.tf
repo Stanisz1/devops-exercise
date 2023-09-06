@@ -50,9 +50,9 @@ resource "kubernetes_service_v1" "front_service" {
 }
 
 resource "kubernetes_service_v1" "nginx_service" {
-  depends_on = [
-    kubernetes_deployment_v1.nginxdep
-  ]
+  # depends_on = [
+  #   kubernetes_deployment_v1.nginxdep
+  # ]
   metadata {
     name = var.service_nginx.name
   }
@@ -62,6 +62,8 @@ resource "kubernetes_service_v1" "nginx_service" {
     port {
       port        = var.service_nginx.port
       target_port = var.service_nginx.target_port
+      node_port = 30201
     }
+    type = "NodePort"
   }
 }

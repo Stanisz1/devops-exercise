@@ -33,6 +33,10 @@ resource "kubernetes_deployment_v1" "frontdep" {
             name  = "CLIENT_API_URL"
             value = "http//frontend"  # Update this with the actual Back service name and port
           }
+          port {
+            
+            container_port =  3000
+          }
         }
       }
     }

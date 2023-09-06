@@ -23,6 +23,7 @@ resource "kubernetes_deployment_v1" "redisdep" {
           image             = var.deployment_redis.container_image
           name              = var.deployment_redis.container_name
           image_pull_policy = "Always"
+        
         }
       }
     }
