@@ -4,7 +4,7 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.29.0"
+    container_image = "ghcr.io/stanisz1/redis:0.30.0"
     container_name  = "redis"
   }
 }
@@ -14,7 +14,7 @@ variable "deployment_backend" {
     app_name        = "backend"
     name            = "backend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.29.0"
+    container_image = "ghcr.io/stanisz1/back:0.30.0"
     container_name  = "backend"
   }
 }
@@ -24,7 +24,7 @@ variable "deployment_frontend" {
     app_name        = "frontend"
     name            = "frontend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/front:0.29.0"
+    container_image = "ghcr.io/stanisz1/front:0.30.0"
     container_name  = "frontend"
   }
 }
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.29.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.30.0"
     container_name  = "nginx"
   }
 }
@@ -87,7 +87,7 @@ variable "ingress_redis" {
 variable "ingress_backend" {
   default  = {
     name      = "backend"
-    host      = "backend"
+    host      = "backend.by"
     port      = 4000
     path      = "/"
     path_type = "Prefix"
@@ -96,7 +96,7 @@ variable "ingress_backend" {
 variable "ingress_frontend" {
   default  = {
     name      = "frontend"
-    host      = "frontend"
+    host      = "frontend.by"
     port      =  3000
     path      = "/"
     path_type = "Prefix"
@@ -105,7 +105,7 @@ variable "ingress_frontend" {
 variable "ingress_nginx" {
   default  = {
     name      = "nginx"
-    host      = "nginx"
+    host      = "nginx.by"
     port      = 80
     path      = "/"
     path_type = "Prefix"
