@@ -62,7 +62,7 @@ resource "kubernetes_service_v1" "nginx_service" {
     port {
       port        = var.service_nginx.port
       target_port = var.service_nginx.target_port
-      node_port = 30201
+      node_port = 37124
     }
     type = "NodePort"
   }
