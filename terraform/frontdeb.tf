@@ -3,14 +3,14 @@ resource "kubernetes_deployment_v1" "frontdep" {
 
 
   metadata {
-    name = var.deployment_front.name
+    name = var.deployment_frontend.name
     labels = {
       test = var.lables_app_name
     }
   }
 
   spec {
-    replicas = var.deployment_front.replica_number
+    replicas = var.deployment_frontend.replica_number
 
     selector {
       match_labels = local.labels
@@ -22,8 +22,8 @@ resource "kubernetes_deployment_v1" "frontdep" {
       }
       spec {
         container {
-          image             = var.deployment_front.container_image
-          name              = var.deployment_front.container_name
+          image             = var.deployment_frontend.container_image
+          name              = var.deployment_frontend.container_name
           image_pull_policy = "Always"
            env {
             name  = "BACKEND_API_URL"

@@ -20,31 +20,31 @@ resource "kubernetes_service_v1" "back_service" {
     kubernetes_deployment_v1.backdep
   ]
   metadata {
-    name = var.service_back.name
+    name = var.service_backend.name
   }
   spec {
     selector = local.labels
 
     port {
-      port        = var.service_back.port
-      target_port = var.service_back.target_port
+      port        = var.service_backend.port
+      target_port = var.service_backend.target_port
     }
   }
 }
 
-resource "kubernetes_service_v1" "front_service" {
+resource "kubernetes_service_v1" "frontend_service" {
   depends_on = [
     kubernetes_deployment_v1.frontdep
   ]
   metadata {
-    name = var.service_front.name
+    name = var.service_frontend.name
   }
   spec {
     selector = local.labels
 
     port {
-      port        = var.service_front.port
-      target_port = var.service_front.target_port
+      port        = var.service_frontend.port
+      target_port = var.service_frontend.target_port
     }
   }
 }

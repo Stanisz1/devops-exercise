@@ -28,61 +28,61 @@ resource "kubernetes_ingress_v1" "redis_ingress" {
   }
 }
 
-resource "kubernetes_ingress_v1" "back_ingress" {
+resource "kubernetes_ingress_v1" "backend_ingress" {
   depends_on = [
     kubernetes_ingress_v1.redis_ingress
   ]
   metadata {
-    name = var.ingress_back.name
+    name = var.ingress_backend.name
   }
 
   spec {
-    ingress_class_name = var.ingress_back.name
+    ingress_class_name = var.ingress_backend.name
     rule {
-      host = var.ingress_back.host
+      host = var.ingress_backend.host
       http {
         path {
           backend {
             service {
-              name = var.service_back.name
+              name = var.service_backend.name
               port {
-                number = var.ingress_back.port
+                number = var.ingress_backend.port
               }
             }
           }
-          path      = var.ingress_back.path
-          path_type = var.ingress_back.path_type
+          path      = var.ingress_backend.path
+          path_type = var.ingress_backend.path_type
         }
       }
     }
   }
 }
 
-resource "kubernetes_ingress_v1" "front_ingress" {
+resource "kubernetes_ingress_v1" "frontend_ingress" {
    depends_on = [
     kubernetes_ingress_v1.redis_ingress,
     kubernetes_deployment_v1.backdep
   ]
   metadata {
-    name = var.ingress_front.name
+    name = var.ingress_frontend.name
   }
 
   spec {
-    ingress_class_name = var.ingress_front.name
+    ingress_class_name = var.ingress_frontend.name
     rule {
-      host = var.ingress_front.host
+      host = var.ingress_frontend.host
       http {
         path {
           backend {
             service {
-              name = var.service_front.name
+              name = var.service_frontend.name
               port {
-                number = var.ingress_front.port
+                number = var.ingress_frontend.port
               }
             }
           }
-          path      = var.ingress_front.path
-          path_type = var.ingress_front.path_type
+          path      = var.ingress_frontend.path
+          path_type = var.ingress_frontend.path_type
         }
       }
     }

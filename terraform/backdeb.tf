@@ -3,14 +3,14 @@ resource "kubernetes_deployment_v1" "backdep" {
 
 
   metadata {
-    name = var.deployment_back.name
+    name = var.deployment_backend.name
     labels = {
       test = var.lables_app_name
     }
   }
 
   spec {
-    replicas = var.deployment_back.replica_number
+    replicas = var.deployment_backend.replica_number
 
     selector {
       match_labels = local.labels
@@ -22,8 +22,8 @@ resource "kubernetes_deployment_v1" "backdep" {
       }
       spec {
         container {
-          image             = var.deployment_back.container_image
-          name              = var.deployment_back.container_name
+          image             = var.deployment_backend.container_image
+          name              = var.deployment_backend.container_name
           image_pull_policy = "Always"
           env {
             name  = "REDIS_SERVER"

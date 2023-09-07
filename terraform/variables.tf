@@ -4,27 +4,27 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.20.0"
+    container_image = "ghcr.io/stanisz1/redis:0.21.0"
     container_name  = "redis"
   }
 }
-variable "deployment_back" {
+variable "deployment_backend" {
   description = "Deployment-related variables_backend"
   default  = {
     app_name        = "backend"
     name            = "backend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.20.0"
+    container_image = "ghcr.io/stanisz1/back:0.21.0"
     container_name  = "back"
   }
 }
-variable "deployment_front" {
+variable "deployment_frontend" {
   description = "Deployment-related variables_frontend"
   default  = {
     app_name        = "frontend"
     name            = "frontend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/end:0.20.0"
+    container_image = "ghcr.io/stanisz1/front:0.21.0"
     container_name  = "end"
   }
 }
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.20.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.4.0"
     container_name  = "nginx"
   }
 }
@@ -48,7 +48,7 @@ variable "service_redis" {
     target_port = 6379
   }
 }
-variable "service_back" {
+variable "service_backend" {
   description = "Service-related variables_backend"
   default  = {
     name        = "backend"
@@ -56,7 +56,7 @@ variable "service_back" {
     target_port = 4000
   }
 }
-variable "service_front" {
+variable "service_frontend" {
   description = "Service-related variables_frontend"
   default  = {
     name        = "frontend"
