@@ -1,24 +1,30 @@
 resource "kubernetes_deployment_v1" "backdep" {
 
+  #  depends_on = [
+  #   kubernetes_deployment_v1.redisdeb
+  # ]
+
 
 
   metadata {
     name = var.deployment_backend.name
-    labels = {
-      test = var.lables_app_name
-    }
+  
   }
 
   spec {
     replicas = var.deployment_backend.replica_number
 
     selector {
-      match_labels = local.labels
+      match_labels =  {
+        app = "backend"
+      }
     }
 
     template {
       metadata {
-        labels = local.labels
+        labels = {
+          app = "backend"
+        }
       }
       spec {
         container {
@@ -32,6 +38,7 @@ resource "kubernetes_deployment_v1" "backdep" {
           port {
             
             container_port =  4000
+            # target_port = 4000
           }
         }
       }

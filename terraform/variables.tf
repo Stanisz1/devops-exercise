@@ -4,7 +4,7 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.30.0"
+    container_image = "ghcr.io/stanisz1/redis:0.31.0"
     container_name  = "redis"
   }
 }
@@ -14,7 +14,7 @@ variable "deployment_backend" {
     app_name        = "backend"
     name            = "backend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.30.0"
+    container_image = "ghcr.io/stanisz1/back:0.31.0"
     container_name  = "backend"
   }
 }
@@ -24,7 +24,7 @@ variable "deployment_frontend" {
     app_name        = "frontend"
     name            = "frontend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/front:0.30.0"
+    container_image = "ghcr.io/stanisz1/front:0.31.0"
     container_name  = "frontend"
   }
 }
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.30.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.31.0"
     container_name  = "nginx"
   }
 }
@@ -46,6 +46,8 @@ variable "service_redis" {
     name        = "redis"
     port        = 6379
     target_port = 6379
+    labels = "redis"
+    environment = "dev"
   }
 }
 variable "service_backend" {
@@ -54,6 +56,8 @@ variable "service_backend" {
     name        = "backend"
     port        = 4000
     target_port = 4000
+    labels = "backend"
+    environment = "dev"
   }
 }
 variable "service_frontend" {
@@ -62,6 +66,8 @@ variable "service_frontend" {
     name        = "frontend"
     port        = 3000
     target_port = 3000
+    labels = "frontend"
+    environment = "dev"
   }
 }
 variable "service_nginx" {
@@ -70,6 +76,7 @@ variable "service_nginx" {
     name        = "nginx"
     port        = 80
     target_port = 80
+  
   }
 }
 
@@ -87,7 +94,7 @@ variable "ingress_redis" {
 variable "ingress_backend" {
   default  = {
     name      = "backend"
-    host      = "backend.by"
+    host      = "backend"
     port      = 4000
     path      = "/"
     path_type = "Prefix"
@@ -96,7 +103,7 @@ variable "ingress_backend" {
 variable "ingress_frontend" {
   default  = {
     name      = "frontend"
-    host      = "frontend.by"
+    host      = "frontend"
     port      =  3000
     path      = "/"
     path_type = "Prefix"
@@ -105,7 +112,7 @@ variable "ingress_frontend" {
 variable "ingress_nginx" {
   default  = {
     name      = "nginx"
-    host      = "nginx.by"
+    host      = "nginx"
     port      = 80
     path      = "/"
     path_type = "Prefix"

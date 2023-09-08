@@ -3,7 +3,7 @@ resource "kubernetes_deployment_v1" "nginxdep" {
   metadata {
     name = var.deployment_nginx.name
     labels = {
-      test = var.lables_app_name
+      app = var.lables_app_name
     }
   }
 
@@ -11,12 +11,16 @@ resource "kubernetes_deployment_v1" "nginxdep" {
     replicas = var.deployment_nginx.replica_number
 
     selector {
-      match_labels = local.labels
+      match_labels =  {
+        app = "nginx"
+      }
     }
 
     template {
       metadata {
-        labels = local.labels
+        labels = {
+          app = "nginx"
+        }
       }
       spec {
         container {

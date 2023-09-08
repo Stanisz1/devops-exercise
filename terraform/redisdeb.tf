@@ -10,13 +10,17 @@ resource "kubernetes_deployment_v1" "redisdep" {
   spec {
     replicas = var.deployment_redis.replica_number
 
-    selector {
-      match_labels = local.labels
+     selector {
+      match_labels =  {
+        app = "redis"
+      }
     }
 
     template {
       metadata {
-        labels = local.labels
+        labels = {
+          app = "redis"
+        }
       }
       spec {
         container {

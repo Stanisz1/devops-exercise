@@ -1,11 +1,15 @@
 resource "kubernetes_deployment_v1" "frontdep" {
+  # depends_on = [
+  #   kubernetes_deployment_v1.backdep,
+  #   kubernetes_deployment_v1.redisdeb
+  # ]
 
 
 
   metadata {
     name = var.deployment_frontend.name
     labels = {
-      test = var.lables_app_name
+      app = var.lables_app_name
     }
   }
 
@@ -13,12 +17,16 @@ resource "kubernetes_deployment_v1" "frontdep" {
     replicas = var.deployment_frontend.replica_number
 
     selector {
-      match_labels = local.labels
+      match_labels =  {
+        app = "frontend"
+      }
     }
 
     template {
       metadata {
-        labels = local.labels
+        labels = {
+          app = "frontend"
+        }
       }
       spec {
         container {
@@ -36,6 +44,7 @@ resource "kubernetes_deployment_v1" "frontdep" {
           port {
             
             container_port =  3000
+            # target_port = 3000
           }
         }
       }

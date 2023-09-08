@@ -30,7 +30,7 @@ resource "kubernetes_ingress_v1" "redis_ingress" {
 
 resource "kubernetes_ingress_v1" "backend_ingress" {
   depends_on = [
-    kubernetes_ingress_v1.redis_ingress
+    kubernetes_service_v1.backend_service
   ]
   metadata {
     name = var.ingress_backend.name
@@ -59,9 +59,9 @@ resource "kubernetes_ingress_v1" "backend_ingress" {
 }
 
 resource "kubernetes_ingress_v1" "frontend_ingress" {
-  #  depends_on = [
-  #   kubernetes_ingress_v1.frontend_service
-  # ]
+   depends_on = [
+    kubernetes_service_v1.frontend_service
+  ]
   metadata {
     name = var.ingress_frontend.name
   }
@@ -89,9 +89,9 @@ resource "kubernetes_ingress_v1" "frontend_ingress" {
 }
 
 resource "kubernetes_ingress_v1" "nginx_ingress" {
-  # depends_on = [
-  #   kubernetes_service_v1.nginx_service
-  # ]
+  depends_on = [
+    kubernetes_service_v1.nginx_service
+  ]
   metadata {
     name = var.ingress_nginx.name
   }
