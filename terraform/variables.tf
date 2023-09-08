@@ -45,7 +45,7 @@ variable "service_redis" {
   default  = {
     name        = "redis"
     port        = 6379
-    target_port = 6379
+    node_port = 30001
     labels = "redis"
     environment = "dev"
   }
@@ -55,7 +55,7 @@ variable "service_backend" {
   default  = {
     name        = "backend"
     port        = 4000
-    target_port = 4000
+    node_port = 30002
     labels = "backend"
     environment = "dev"
   }
@@ -65,7 +65,7 @@ variable "service_frontend" {
   default  = {
     name        = "frontend"
     port        = 3000
-    target_port = 3000
+    node_port = 30003
     labels = "frontend"
     environment = "dev"
   }
@@ -74,8 +74,8 @@ variable "service_nginx" {
   description = "Service-related variables_nginx"
   default  = {
     name        = "nginx"
-    port        = 80
-    target_port = 80
+    port        = 8080
+    node_port = 30004
   
   }
 }
@@ -96,7 +96,7 @@ variable "ingress_backend" {
     name      = "backend"
     host      = "backend"
     port      = 4000
-    path      = "/"
+    path      = "/api/"
     path_type = "Prefix"
   }
 }
@@ -112,8 +112,8 @@ variable "ingress_frontend" {
 variable "ingress_nginx" {
   default  = {
     name      = "nginx"
-    host      = "nginx"
-    port      = 80
+    host      = "devos-exer-nginx.com"
+    port      = 8080
     path      = "/"
     path_type = "Prefix"
   }
