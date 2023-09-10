@@ -4,7 +4,7 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.31.0"
+    container_image = "ghcr.io/stanisz1/redis:0.32.0"
     container_name  = "redis"
   }
 }
@@ -14,7 +14,7 @@ variable "deployment_backend" {
     app_name        = "backend"
     name            = "backend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.31.0"
+    container_image = "ghcr.io/stanisz1/back:0.32.0"
     container_name  = "backend"
   }
 }
@@ -24,7 +24,7 @@ variable "deployment_frontend" {
     app_name        = "frontend"
     name            = "frontend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/front:0.31.0"
+    container_image = "ghcr.io/stanisz1/front:0.32.0"
     container_name  = "frontend"
   }
 }
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.31.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.32.0"
     container_name  = "nginx"
   }
 }
@@ -45,7 +45,7 @@ variable "service_redis" {
   default  = {
     name        = "redis"
     port        = 6379
-    node_port = 30001
+    target_port = 6379
     labels = "redis"
     environment = "dev"
   }
@@ -55,7 +55,7 @@ variable "service_backend" {
   default  = {
     name        = "backend"
     port        = 4000
-    node_port = 30002
+    target_port = 4000
     labels = "backend"
     environment = "dev"
   }
@@ -65,7 +65,7 @@ variable "service_frontend" {
   default  = {
     name        = "frontend"
     port        = 3000
-    node_port = 30003
+    target_port = 3000
     labels = "frontend"
     environment = "dev"
   }
@@ -74,8 +74,8 @@ variable "service_nginx" {
   description = "Service-related variables_nginx"
   default  = {
     name        = "nginx"
-    port        = 8080
-    node_port = 30004
+    port        = 80
+    target_port = 80
   
   }
 }
@@ -86,7 +86,7 @@ variable "ingress_redis" {
     name      = "redis"
     host      = "redis"
     port      = 6379
-    path      = "/"
+    path      = "/6379"
     path_type = "Prefix"
   }
 }
@@ -112,9 +112,9 @@ variable "ingress_frontend" {
 variable "ingress_nginx" {
   default  = {
     name      = "nginx"
-    host      = "devos-exer-nginx.com"
-    port      = 8080
-    path      = "/"
+    host      = "devoper.info"
+    port      = 80
+    path      = "/505"
     path_type = "Prefix"
   }
 }

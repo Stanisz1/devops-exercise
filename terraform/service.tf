@@ -12,9 +12,9 @@ resource "kubernetes_service_v1" "redis_service" {
     session_affinity = "ClientIP"
     port {
       port        = var.service_redis.port
-      node_port = var.service_redis.node_port
+      target_port = var.service_redis.target_port
     }
-    type = "NodePort"
+    
   }
 }
 
@@ -32,9 +32,9 @@ resource "kubernetes_service_v1" "backend_service" {
     session_affinity = "ClientIP"
     port {
       port        = var.service_backend.port
-      node_port = var.service_backend.node_port
+      target_port = var.service_backend.target_port
     }
-    type = "NodePort"
+    
   }
 }
 
@@ -52,16 +52,14 @@ resource "kubernetes_service_v1" "frontend_service" {
     session_affinity = "ClientIP"
     port {
       port        = var.service_frontend.port
-      node_port = var.service_frontend.node_port
+      target_port = var.service_frontend.target_port
     }
-    type = "NodePort"
+    
   }
 }
 
 resource "kubernetes_service_v1" "nginx_service" {
-  # depends_on = [
-  #   kubernetes_deployment_v1.nginxdep
-  # ]
+  
   metadata {
     name = var.service_nginx.name
   }
@@ -73,9 +71,7 @@ resource "kubernetes_service_v1" "nginx_service" {
     session_affinity = "ClientIP"
     port {
       port        = var.service_nginx.port
-      node_port = var.service_nginx.node_port
-      # node_port = 30102
+      target_port = var.service_nginx.target_port
     }
-    type = "NodePort"
   }
 }
