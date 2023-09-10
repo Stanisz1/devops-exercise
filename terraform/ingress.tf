@@ -4,7 +4,7 @@ resource "kubernetes_ingress_v1" "nginx_ingress" {
   ]
   wait_for_load_balancer = true
   metadata {
-    name = "devops-exrsice"
+    name = "devops-exersice"
   }
 
   spec {

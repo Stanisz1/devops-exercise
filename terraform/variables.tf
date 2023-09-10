@@ -4,7 +4,7 @@ variable "deployment_redis" {
     app_name        = "redis"
     name            = "redis"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/redis:0.32.0"
+    container_image = "ghcr.io/stanisz1/redis:0.34.0"
     container_name  = "redis"
   }
 }
@@ -14,7 +14,7 @@ variable "deployment_backend" {
     app_name        = "backend"
     name            = "backend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/back:0.32.0"
+    container_image = "ghcr.io/stanisz1/back:0.34.0"
     container_name  = "backend"
   }
 }
@@ -24,7 +24,7 @@ variable "deployment_frontend" {
     app_name        = "frontend"
     name            = "frontend"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/front:0.32.0"
+    container_image = "ghcr.io/stanisz1/front:0.34.0"
     container_name  = "frontend"
   }
 }
@@ -34,7 +34,7 @@ variable "deployment_nginx" {
     app_name        = "nginx"
     name            = "nginx"
     replica_number  = 1
-    container_image = "ghcr.io/stanisz1/nginx:0.32.0"
+    container_image = "ghcr.io/stanisz1/nginx:0.34.0"
     container_name  = "nginx"
   }
 }
@@ -112,7 +112,7 @@ variable "ingress_frontend" {
 variable "ingress_nginx" {
   default  = {
     name      = "nginx"
-    host      = "devoper.info"
+    host      = "devops-exercise-front"
     port      = 80
     path      = "/505"
     path_type = "Prefix"

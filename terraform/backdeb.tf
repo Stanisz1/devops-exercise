@@ -1,11 +1,5 @@
 resource "kubernetes_deployment_v1" "backdep" {
 
-  #  depends_on = [
-  #   kubernetes_deployment_v1.redisdeb
-  # ]
-
-
-
   metadata {
     name = var.deployment_backend.name
   

@@ -59,7 +59,7 @@ resource "kubernetes_service_v1" "frontend_service" {
 }
 
 resource "kubernetes_service_v1" "nginx_service" {
-  
+
   metadata {
     name = var.service_nginx.name
   }
