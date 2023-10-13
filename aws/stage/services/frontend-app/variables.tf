@@ -48,6 +48,22 @@ variable "back_count" {
   default     = 1
 }
 
+
+variable "redis_image" {
+  description = "Docker image to run in the ECS cluster"
+  default     = "ghcr.io/stanisz1/redis:0.34.0"
+}
+
+variable "redis_port" {
+  description = "Port exposed by the docker image to redirect traffic to"
+  default     = 6379
+}
+
+variable "redis_count" {
+  description = "Number of docker containers to run"
+  default     = 1
+}
+
 variable "health_check_path" {
   default = "/"
 }
@@ -80,6 +96,18 @@ variable "public_subnet_cidrs_a" {
   description = "Public Subnet CIDR values"
   default     = ["10.0.12.0/24", ]
 }
+
+# variable "database_subnet_cidrs_a" {
+#   type        = list(string)
+#   description = "Public Subnet CIDR values"
+#   default     = ["10.0.13.0/24", ]
+# }
+
+# variable "database_subnet_cidrs_b" {
+#   type        = list(string)
+#   description = "Private Subnet CIDR values"
+#   default     = ["10.0.23.0/24", ]
+# }
 
 variable "private_subnet_cidrs_b" {
   type        = list(string)

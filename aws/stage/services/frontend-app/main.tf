@@ -80,6 +80,31 @@ resource "aws_subnet" "public_subnets_b" {
  }
 }
 
+# resource "aws_subnet" "database_subnets_a" {
+#  count             = length(var.database_subnet_cidrs_a)
+#  vpc_id            = aws_vpc.main.id
+#  cidr_block        = element(var.database_subnet_cidrs_a, count.index)
+#  availability_zone = element(var.azs_a, count.index)
+#  map_public_ip_on_launch = true
+ 
+#  tags = {
+#    Name = "Database Subnet ${count.index + 1}"
+#  }
+# }
+
+# resource "aws_subnet" "database_subnets_b" {
+#  count             = length(var.database_subnet_cidrs_b)
+#  vpc_id            = aws_vpc.main.id
+#  cidr_block        = element(var.database_subnet_cidrs_b, count.index)
+#  availability_zone = element(var.azs_b, count.index)
+ 
+#  tags = {
+#    Name = "Database Subnet ${count.index + 1}"
+#  }
+# }
+
+
+
 resource "aws_eip" "nat_a" {
   vpc = true
 
@@ -286,10 +311,10 @@ resource "aws_security_group" "back_ecs_tasks" {
   }
 }
 
-resource "aws_security_group" "redis-sg" {
+resource "aws_security_group" "redis_ecs_tasks" {
   name        = "redis-sg"
   description = "Required ports for redis"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = aws_vpc.main.id
 ingress {
     description      = "SSH"
     from_port        = 22
@@ -368,6 +393,24 @@ resource "aws_alb_target_group" "back" {
   }
 }
 
+resource "aws_alb_target_group" "redis" {
+  name        = "redis-target-group"
+  port        = var.redis_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+
+  health_check {
+    healthy_threshold   = "3"
+    interval            = "30"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = var.health_check_path
+    unhealthy_threshold = "2"
+  }
+}
+
 # Redirect all traffic from the ALB to the target group
 resource "aws_alb_listener" "main_end" {
   load_balancer_arn = aws_alb.main.arn
@@ -403,7 +446,7 @@ resource "aws_alb_listener_rule" "back" {
 
   condition {
     path_pattern {
-      values = ["/app/*"]
+      values = ["/api/*"]
     }
   }
    action {
@@ -552,7 +595,7 @@ resource "aws_ecs_service" "back" {
 
   network_configuration {
     security_groups  = [aws_security_group.back_ecs_tasks.id]
-    subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id)
+    subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
     
   }
 
@@ -565,31 +608,26 @@ resource "aws_ecs_service" "back" {
   depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back]
 }
 
+
+
+
 # ---------------------------------------------------------------------------------------------------
 #                                           Memory DB for redis
 # ---------------------------------------------------------------------------------------------------
 
-
-resource "aws_memorydb_cluster" "memorydb-cluster" {
-  acl_name                 = "redis-acl" 
-  name                     = "memorydb-cluster"
-  node_type                = "db.t2.micro"
+resource "aws_memorydb_cluster" "redis_cluster" {
+  acl_name                 = "open-access" 
+  name                     = "redis"
+  node_type                = "db.t4g.small"
   num_shards               = 2
-  security_group_ids       = [aws_security_group.redis-sg.id]
+  security_group_ids       = [aws_security_group.redis_ecs_tasks.id]
   snapshot_retention_limit = 7
-  subnet_group_name        = aws_memorydb_subnet_group.memorydb-subnet-group.id
+  subnet_group_name        = aws_memorydb_subnet_group.redis_subnet_group.id
 }
-resource "aws_memorydb_subnet_group" "memorydb-subnet-group" {
-  name       = "memorydb-subnet-group"
-  subnet_ids = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id)
+resource "aws_memorydb_subnet_group" "redis_subnet_group" {
+  name       = "redis-subnet-group"
+  subnet_ids = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
 }
-
-
-
-
-
-
-
 
 
 
