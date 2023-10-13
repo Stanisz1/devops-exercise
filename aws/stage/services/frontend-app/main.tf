@@ -286,6 +286,38 @@ resource "aws_security_group" "back_ecs_tasks" {
   }
 }
 
+resource "aws_security_group" "redis-sg" {
+  name        = "redis-sg"
+  description = "Required ports for redis"
+  vpc_id      = aws_vpc.vpc.id
+ingress {
+    description      = "SSH"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = []
+  }
+  ingress {
+    description      = "redis"
+    from_port        = 6379
+    to_port          = 6379
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = []
+  }
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+tags = {
+    Name = "redis-security-group"
+  }
+}
+
 
 # ---------------------------------------------------------------------------------------------------
 #                                            application load balancer
@@ -532,6 +564,34 @@ resource "aws_ecs_service" "back" {
 
   depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back]
 }
+
+# ---------------------------------------------------------------------------------------------------
+#                                           Memory DB for redis
+# ---------------------------------------------------------------------------------------------------
+
+
+resource "aws_memorydb_cluster" "memorydb-cluster" {
+  acl_name                 = "redis-acl" 
+  name                     = "memorydb-cluster"
+  node_type                = "db.t2.micro"
+  num_shards               = 2
+  security_group_ids       = [aws_security_group.redis-sg.id]
+  snapshot_retention_limit = 7
+  subnet_group_name        = aws_memorydb_subnet_group.memorydb-subnet-group.id
+}
+resource "aws_memorydb_subnet_group" "memorydb-subnet-group" {
+  name       = "memorydb-subnet-group"
+  subnet_ids = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id)
+}
+
+
+
+
+
+
+
+
+
 
 terraform {
   backend "s3" {
