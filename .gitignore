@@ -94,3 +94,4 @@ desktop.ini
 .terraform
 *.tfstate
 *.tfstate.backup
+*.iml
