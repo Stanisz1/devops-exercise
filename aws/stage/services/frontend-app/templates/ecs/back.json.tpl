@@ -5,12 +5,7 @@
     "cpu": ${fargate_cpu},
     "memory": ${fargate_memory},
     "networkMode": "awsvpc",
-    "environment": [
-      {
-        "name": "REDIS_SERVER",
-        "value": "redis:6379"
-      }
-    ],
+    "AssignPublicIp" : true,
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
