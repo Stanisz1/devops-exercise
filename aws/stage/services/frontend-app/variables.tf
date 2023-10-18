@@ -85,16 +85,16 @@ variable "cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "private_subnet_cidrs_a" {
-  type        = list(string)
-  description = "Private Subnet CIDR values"
-  default     = ["10.0.10.0/24", "10.0.11.0/24", ]
-}
+# variable "private_subnet_cidrs_a" {
+#   type        = list(string)
+#   description = "Private Subnet CIDR values"
+#   default     = ["10.0.10.0/24", "10.0.11.0/24", ]
+# }
 
 variable "public_subnet_cidrs_a" {
   type        = list(string)
   description = "Public Subnet CIDR values"
-  default     = ["10.0.12.0/24", ]
+  default     = ["10.0.12.0/24","10.0.10.0/24", "10.0.11.0/24", ]
 }
 
 # variable "database_subnet_cidrs_a" {
@@ -109,16 +109,16 @@ variable "public_subnet_cidrs_a" {
 #   default     = ["10.0.23.0/24", ]
 # }
 
-variable "private_subnet_cidrs_b" {
-  type        = list(string)
-  description = "Private Subnet CIDR values"
-  default     = ["10.0.20.0/24", "10.0.21.0/24", ]
-}
+# variable "private_subnet_cidrs_b" {
+#   type        = list(string)
+#   description = "Private Subnet CIDR values"
+#   default     = ["10.0.20.0/24", "10.0.21.0/24", ]
+# }
 
 variable "public_subnet_cidrs_b" {
   type        = list(string)
   description = "Public Subnet CIDR values"
-  default     = ["10.0.22.0/24", ]
+  default     = ["10.0.22.0/24", "10.0.20.0/24", "10.0.21.0/24",]
 }
 
 variable "azs_a" {

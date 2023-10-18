@@ -177,7 +177,7 @@ resource "aws_route_table" "private_b" {
   }
 }
 
-resource "aws_route_table" "public" {
+resource "aws_route_table" "public_a" {
   vpc_id = aws_vpc.main.id
 
   route {
@@ -186,9 +186,51 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = var.name_rt_public
+    Name = "${var.name_rt_public}-a"
   }
 }
+
+
+
+
+resource "aws_route_table" "public_b" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  tags = {
+    Name = "${var.name_rt_public}-b"
+  }
+}
+
+# resource "aws_route_table" "common_a" {
+#   vpc_id = aws_vpc.main.id
+
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.igw.id
+#   }
+
+#   tags = {
+#     Name = "common-a"
+#   }
+# }
+
+# resource "aws_route_table" "common_b" {
+#   vpc_id = aws_vpc.main.id
+
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.igw.id
+#   }
+
+#   tags = {
+#     Name = "common-b"
+#   }
+# }
 
 resource "aws_route_table_association" "private_a" {
  count = length(var.private_subnet_cidrs_a)
@@ -205,14 +247,29 @@ resource "aws_route_table_association" "private_b" {
 resource "aws_route_table_association" "public_a" {
  count = length(var.public_subnet_cidrs_a)
  subnet_id      = element(aws_subnet.public_subnets_a[*].id, count.index)
- route_table_id = element(aws_route_table.public.*.id, count.index)
+ route_table_id = element(aws_route_table.public_a.*.id, count.index)
 }
 
 resource "aws_route_table_association" "public_b" {
  count = length(var.public_subnet_cidrs_b)
- subnet_id      = element(aws_subnet.public_subnets_a[*].id, count.index)
- route_table_id = element(aws_route_table.public.*.id, count.index)
+ subnet_id      = element(aws_subnet.public_subnets_b[*].id, count.index)
+ route_table_id = element(aws_route_table.public_b.*.id, count.index)
 }
+
+# resource "aws_route_table_association" "common_a" {
+#   count = length(var.public_subnet_cidrs_a)
+
+#   subnet_id      = element(aws_subnet.public_subnets_a[*].id, count.index)
+#   route_table_id = element(aws_route_table.common_a.*.id, count.index)
+# }
+
+# resource "aws_route_table_association" "common_b" {
+#   count = length(var.public_subnet_cidrs_b)
+
+#   subnet_id      = element(aws_subnet.public_subnets_b[*].id, count.index)
+#   route_table_id = element(aws_route_table.common_b.*.id, count.index)
+# }
+
 
 # ---------------------------------------------------------------------------------------------------
 #                                            SECIRITY GROUP
@@ -353,7 +410,7 @@ resource "aws_alb" "main" {
   name               = "main-load-balancer"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb.id]
-  subnets            = concat(aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
+  subnets            = concat(aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id,)
 }
 
 
@@ -373,6 +430,7 @@ resource "aws_alb_target_group" "front" {
     path                = var.health_check_path
     unhealthy_threshold = "2"
   }
+ 
 }
 
 resource "aws_alb_target_group" "back" {
@@ -425,20 +483,6 @@ resource "aws_alb_listener" "main_end" {
 
 
 # Rull for back and front 
-resource "aws_alb_listener_rule" "front" {
-  listener_arn = aws_alb_listener.main_end.arn
-  priority    = 101
-
-  condition {
-    path_pattern {
-      values = ["*"]
-    }
-  }
-  action {
-    type             = "forward"
-    target_group_arn = aws_alb_target_group.front.id
-  }
-}
 
 resource "aws_alb_listener_rule" "back" {
   listener_arn = aws_alb_listener.main_end.arn
@@ -468,8 +512,8 @@ data "template_file" "front" {
   template = file("./templates/ecs/front.json.tpl")
 
   vars = {
-    front_image      = var.front_image
-    front_port       = var.front_port
+    front_image    = var.front_image
+    front_port     = var.front_port
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory
     aws_region     = var.aws_region
@@ -519,7 +563,7 @@ resource "aws_ecs_service" "front" {
 
   network_configuration {
     security_groups  = [aws_security_group.front_ecs_tasks.id]
-    subnets          = concat(aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
+    subnets          = concat(aws_subnet.private_subnets_b[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
     assign_public_ip = true
   }
 
@@ -529,7 +573,7 @@ resource "aws_ecs_service" "front" {
     container_port   = var.front_port
   }
 
-  depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.front ,aws_iam_role_policy_attachment.ecs_task_execution_role]
+  depends_on = [aws_alb_listener.main_end, aws_iam_role_policy_attachment.ecs_task_execution_role]
 }
 
 # ---------------------------------------------------------------------------------------------------
@@ -544,8 +588,8 @@ data "template_file" "back" {
   template = file("./templates/ecs/back.json.tpl")
 
   vars = {
-    back_image      = var.back_image
-    back_port       = var.back_port
+    back_image     = var.back_image
+    back_port      = var.back_port
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory
     aws_region     = var.aws_region
@@ -595,8 +639,8 @@ resource "aws_ecs_service" "back" {
 
   network_configuration {
     security_groups  = [aws_security_group.back_ecs_tasks.id]
-    subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
-    
+    subnets          = concat(aws_subnet.private_subnets_b[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
+    assign_public_ip = true
   }
 
   load_balancer {
@@ -626,7 +670,7 @@ resource "aws_memorydb_cluster" "redis_cluster" {
 }
 resource "aws_memorydb_subnet_group" "redis_subnet_group" {
   name       = "redis-subnet-group"
-  subnet_ids = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
+  subnet_ids =  concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
 }
 
 
