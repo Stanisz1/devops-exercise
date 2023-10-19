@@ -287,13 +287,6 @@ resource "aws_security_group" "lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ingress {
-  #   protocol    = "tcp"
-  #   from_port   = var.back_port
-  #   to_port     = var.back_port
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-
   egress {
     protocol    = "-1"
     from_port   = 0
@@ -302,7 +295,6 @@ resource "aws_security_group" "lb" {
   }
 
 }
-
   locals {
     http_port    = 80
     any_port     = 0
@@ -323,15 +315,12 @@ resource "aws_security_group" "front_ecs_tasks" {
     to_port         = var.front_port
     security_groups = [aws_security_group.lb.id]
   }
-
-    ingress {
+  ingress {
     protocol        = "tcp"
     from_port       = 80
     to_port         = 80
     security_groups = [aws_security_group.lb.id]
   }
-
-
   egress {
     protocol    = "-1"
     from_port   = 0
@@ -351,14 +340,20 @@ resource "aws_security_group" "back_ecs_tasks" {
     to_port         = var.back_port
     security_groups = [aws_security_group.lb.id]
   }
-
-      ingress {
+  ingress {
+    description      = "redis"
+    from_port        = 6379
+    to_port          = 6379
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = []
+  }
+  ingress {
     protocol        = "tcp"
     from_port       = 80
     to_port         = 80
     security_groups = [aws_security_group.lb.id]
   }
-
 
   egress {
     protocol    = "-1"
@@ -368,43 +363,9 @@ resource "aws_security_group" "back_ecs_tasks" {
   }
 }
 
-resource "aws_security_group" "redis_ecs_tasks" {
-  name        = "redis-sg"
-  description = "Required ports for redis"
-  vpc_id      = aws_vpc.main.id
-ingress {
-    description      = "SSH"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = []
-  }
-  ingress {
-    description      = "redis"
-    from_port        = 6379
-    to_port          = 6379
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = []
-  }
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-tags = {
-    Name = "redis-security-group"
-  }
-}
-
-
 # ---------------------------------------------------------------------------------------------------
 #                                            application load balancer
 # ---------------------------------------------------------------------------------------------------
-
 
 resource "aws_alb" "main" {
   name               = "main-load-balancer"
@@ -412,7 +373,6 @@ resource "aws_alb" "main" {
   security_groups    = [aws_security_group.lb.id]
   subnets            = concat(aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id,)
 }
-
 
 resource "aws_alb_target_group" "front" {
   name        = "front-target-group"
@@ -430,30 +390,11 @@ resource "aws_alb_target_group" "front" {
     path                = var.health_check_path
     unhealthy_threshold = "2"
   }
- 
 }
 
 resource "aws_alb_target_group" "back" {
   name        = "back-target-group"
   port        = var.back_port
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
-
-  health_check {
-    healthy_threshold   = "3"
-    interval            = "30"
-    protocol            = "HTTP"
-    matcher             = "200"
-    timeout             = "3"
-    path                = var.health_check_path
-    unhealthy_threshold = "2"
-  }
-}
-
-resource "aws_alb_target_group" "redis" {
-  name        = "redis-target-group"
-  port        = var.redis_port
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
@@ -481,7 +422,6 @@ resource "aws_alb_listener" "main_end" {
   }
 }
 
-
 # Rull for back and front 
 
 resource "aws_alb_listener_rule" "back" {
@@ -498,7 +438,6 @@ resource "aws_alb_listener_rule" "back" {
     target_group_arn = aws_alb_target_group.back.id
   }
 }
-
 
 # ---------------------------------------------------------------------------------------------------
 #                                           ECS cluster-front
@@ -517,6 +456,7 @@ data "template_file" "front" {
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory
     aws_region     = var.aws_region
+    aws_alb_dns_name = aws_alb.main.dns_name
   }
 }
 
@@ -563,7 +503,7 @@ resource "aws_ecs_service" "front" {
 
   network_configuration {
     security_groups  = [aws_security_group.front_ecs_tasks.id]
-    subnets          = concat(aws_subnet.private_subnets_b[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
+    subnets          = concat(aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
     assign_public_ip = true
   }
 
@@ -573,7 +513,7 @@ resource "aws_ecs_service" "front" {
     container_port   = var.front_port
   }
 
-  depends_on = [aws_alb_listener.main_end, aws_iam_role_policy_attachment.ecs_task_execution_role]
+  depends_on = [aws_alb_listener.main_end, aws_iam_role_policy_attachment.ecs_task_execution_role,aws_ecs_task_definition.back]
 }
 
 # ---------------------------------------------------------------------------------------------------
@@ -593,6 +533,8 @@ data "template_file" "back" {
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory
     aws_region     = var.aws_region
+    # aws_redis      = aws_memorydb_cluster.redis_cluster.arn
+    redis_endpoint = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].address
   }
 }
 
@@ -609,6 +551,42 @@ data "aws_iam_policy_document" "ecs_task_execution_role_back" {
     }
   }
 }
+
+resource "aws_iam_role" "ecs_execution_role_redis" {
+  name = "ecs_execution_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+data "aws_iam_policy_document" "redis_access_policy" {
+  statement {
+    actions   = ["redis:Connect"]
+    resources = [aws_memorydb_cluster.redis_cluster.arn]
+  }
+}
+
+resource "aws_iam_policy" "redis_access" {
+  name        = "redis-access-policy"
+  description = "Policy to allow access to Redis"
+  policy      = data.aws_iam_policy_document.redis_access_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "redis_access_attachment" {
+  policy_arn = aws_iam_policy.redis_access.arn
+  role       = aws_iam_role.ecs_execution_role_redis.name
+}
+
 
 resource "aws_iam_role" "ecs_task_execution_role_back" {
   name               = "ecs-staging-execution-role-back"
@@ -628,6 +606,7 @@ resource "aws_ecs_task_definition" "back" {
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
   container_definitions    = data.template_file.back.rendered
+  
 }
 
 resource "aws_ecs_service" "back" {
@@ -639,7 +618,7 @@ resource "aws_ecs_service" "back" {
 
   network_configuration {
     security_groups  = [aws_security_group.back_ecs_tasks.id]
-    subnets          = concat(aws_subnet.private_subnets_b[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
+    subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id)
     assign_public_ip = true
   }
 
@@ -649,11 +628,8 @@ resource "aws_ecs_service" "back" {
     container_port   = var.back_port
   }
 
-  depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back]
+  depends_on = [aws_iam_role_policy_attachment.redis_access_attachment, aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back,aws_memorydb_cluster.redis_cluster]
 }
-
-
-
 
 # ---------------------------------------------------------------------------------------------------
 #                                           Memory DB for redis
@@ -663,11 +639,12 @@ resource "aws_memorydb_cluster" "redis_cluster" {
   acl_name                 = "open-access" 
   name                     = "redis"
   node_type                = "db.t4g.small"
-  num_shards               = 2
-  security_group_ids       = [aws_security_group.redis_ecs_tasks.id]
-  snapshot_retention_limit = 7
+  num_shards               = 1
+  security_group_ids       = [aws_security_group.back_ecs_tasks.id]
+  snapshot_retention_limit = 1
   subnet_group_name        = aws_memorydb_subnet_group.redis_subnet_group.id
 }
+
 resource "aws_memorydb_subnet_group" "redis_subnet_group" {
   name       = "redis-subnet-group"
   subnet_ids =  concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
