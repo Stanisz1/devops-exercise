@@ -579,7 +579,7 @@ resource "aws_iam_policy" "redis_connect_policy" {
       {
         Action   = "redis:Connect",
         Effect   = "Allow",
-        Resource = "arn:aws:memorydb:${data.aws_region.current.name}:${aws_account_id}:cluster/redis"
+        Resource = "arn:aws:memorydb:${data.aws_region.current.name}:${local.aws_account_id}:cluster/redis"
       }
     ]
   })
