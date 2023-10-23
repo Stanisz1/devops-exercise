@@ -2,17 +2,13 @@
   {
     "name": "back",
     "image": "${back_image}",
-    "cpu": ${fargate_cpu},
-    "memory": ${fargate_memory},
+    "cpu": ${fargate_cpu_b},
+    "memory": ${fargate_memory_b},
     "networkMode": "awsvpc",
     "environment": [
       {
         "name": "REDIS_SERVER",
-        "value": "${redis_endpoint}"
-      },
-      {
-        "name": "REDIS_PORT",
-        "value": "6379"
+        "value": "${aws_redis}"
       }
     ],
     "logConfiguration": {

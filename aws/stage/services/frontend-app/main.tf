@@ -304,36 +304,18 @@ resource "aws_security_group" "lb" {
   }
 
 # Traffic to the ECS cluster should only come from the ALB
-resource "aws_security_group" "front_ecs_tasks" {
-  name        = "front-ecs-tasks-security-group"
+
+
+resource "aws_security_group" "ecs_tasks" {
+  name        = "ecs-tasks-security-group"
   description = "allow inbound access from the ALB only"
   vpc_id      = aws_vpc.main.id
-
   ingress {
     protocol        = "tcp"
     from_port       = var.front_port
     to_port         = var.front_port
     security_groups = [aws_security_group.lb.id]
   }
-  ingress {
-    protocol        = "tcp"
-    from_port       = 80
-    to_port         = 80
-    security_groups = [aws_security_group.lb.id]
-  }
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "back_ecs_tasks" {
-  name        = "back-ecs-tasks-security-group"
-  description = "allow inbound access from the ALB only"
-  vpc_id      = aws_vpc.main.id
-
   ingress {
     protocol        = "tcp"
     from_port       = var.back_port
@@ -346,7 +328,6 @@ resource "aws_security_group" "back_ecs_tasks" {
     to_port          = 6379
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = []
   }
   ingress {
     protocol        = "tcp"
@@ -355,6 +336,22 @@ resource "aws_security_group" "back_ecs_tasks" {
     security_groups = [aws_security_group.lb.id]
   }
 
+  # ingress {
+  #   protocol    = "-1"
+  #   from_port   = 0
+  #   to_port     = 0
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
+
+  # ingress {
+  #   description      = "SSH"
+  #   from_port        = 22
+  #   to_port          = 22
+  #   protocol         = "tcp"
+  #   cidr_blocks      = ["0.0.0.0/0"]
+  #   security_groups = [aws_security_group.lb.id]
+  # }
+
   egress {
     protocol    = "-1"
     from_port   = 0
@@ -362,6 +359,9 @@ resource "aws_security_group" "back_ecs_tasks" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+
+
 
 # ---------------------------------------------------------------------------------------------------
 #                                            application load balancer
@@ -422,7 +422,23 @@ resource "aws_alb_listener" "main_end" {
   }
 }
 
-# Rull for back and front 
+# Rull for front 
+resource "aws_alb_listener_rule" "front" {
+  listener_arn = aws_alb_listener.main_end.arn
+  priority    = 101
+
+  condition {
+    path_pattern {
+      values = ["*"]
+    }
+  }
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.front.id
+  }
+}
+
+# Rull for back
 
 resource "aws_alb_listener_rule" "back" {
   listener_arn = aws_alb_listener.main_end.arn
@@ -454,9 +470,9 @@ data "template_file" "front" {
     front_image    = var.front_image
     front_port     = var.front_port
     fargate_cpu    = var.fargate_cpu
-    fargate_memory = var.fargate_memory
+    fargate_memory = var.fargate_memory 
     aws_region     = var.aws_region
-    aws_alb_dns_name = aws_alb.main.dns_name
+    # aws_alb_dns_name = aws_alb.main.dns_name
   }
 }
 
@@ -502,7 +518,7 @@ resource "aws_ecs_service" "front" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups  = [aws_security_group.front_ecs_tasks.id]
+    security_groups  = [aws_security_group.ecs_tasks.id]
     subnets          = concat(aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
     assign_public_ip = true
   }
@@ -513,12 +529,13 @@ resource "aws_ecs_service" "front" {
     container_port   = var.front_port
   }
 
-  depends_on = [aws_alb_listener.main_end, aws_iam_role_policy_attachment.ecs_task_execution_role,aws_ecs_task_definition.back]
+  depends_on = [aws_alb_listener.main_end, aws_iam_role_policy_attachment.ecs_task_execution_role,aws_ecs_service.back]
 }
 
 # ---------------------------------------------------------------------------------------------------
 #                                           ECS cluster-back
 # ---------------------------------------------------------------------------------------------------
+
 
 resource "aws_ecs_cluster" "back" {
   name = "devops-exersice"
@@ -528,16 +545,17 @@ data "template_file" "back" {
   template = file("./templates/ecs/back.json.tpl")
 
   vars = {
-    back_image     = var.back_image
-    back_port      = var.back_port
-    fargate_cpu    = var.fargate_cpu
-    fargate_memory = var.fargate_memory
-    aws_region     = var.aws_region
-    # aws_redis      = aws_memorydb_cluster.redis_cluster.arn
-    redis_endpoint = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].address
+    back_image       = var.back_image
+    back_port        = var.back_port
+    fargate_cpu_b    = var.fargate_cpu_b
+    fargate_memory_b = var.fargate_memory_b
+    aws_region       = var.aws_region
+    # aws_redis        = aws_ecs_service.redis.id
+    # # redis_endpoint   = aws_elasticache_cluster.redis.configuration_endpoint
+    aws_redis        = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].address
+    # redis_port       = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].port
   }
 }
-
 data "aws_iam_policy_document" "ecs_task_execution_role_back" {
   version = "2012-10-17"
   statement {
@@ -552,45 +570,64 @@ data "aws_iam_policy_document" "ecs_task_execution_role_back" {
   }
 }
 
-resource "aws_iam_role" "ecs_execution_role_redis" {
-  name = "ecs_execution_role"
-
-  assume_role_policy = jsonencode({
+resource "aws_iam_policy" "redis_connect_policy" {
+  name        = "RedisConnectPolicy"
+  description = "Allows redis:Connect action"
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
+        Action   = "redis:Connect",
+        Effect   = "Allow",
+        Resource = "arn:aws:memorydb:${data.aws_region.current.name}:${aws_account_id}:cluster/redis"
       }
     ]
   })
 }
 
-data "aws_iam_policy_document" "redis_access_policy" {
-  statement {
-    actions   = ["redis:Connect"]
-    resources = [aws_memorydb_cluster.redis_cluster.arn]
-  }
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}
+
+locals {
+  aws_account_id = data.aws_caller_identity.current.account_id
 }
 
-resource "aws_iam_policy" "redis_access" {
-  name        = "redis-access-policy"
-  description = "Policy to allow access to Redis"
-  policy      = data.aws_iam_policy_document.redis_access_policy.json
+resource "aws_iam_policy" "ecs_task_execution_role_policy_memorydb" {
+  name        = "ECSTaskExecutionRolePolicy"
+  description = "Policy for ECS Task Execution Role"
+  policy      = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "memorydb:*",
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = "iam:CreateServiceLinkedRole",
+        Resource = "arn:aws:iam::*:role/aws-service-role/memorydb.amazonaws.com/AWSServiceRoleForMemoryDB",
+        Condition = {
+          StringLike = {
+            "iam:AWSServiceName" = "memorydb.amazonaws.com"
+          }
+        }
+      },
+    ]
+  })
 }
 
-resource "aws_iam_role_policy_attachment" "redis_access_attachment" {
-  policy_arn = aws_iam_policy.redis_access.arn
-  role       = aws_iam_role.ecs_execution_role_redis.name
+
+resource "aws_iam_policy_attachment" "ecs_task_execution_role_memorydb" {
+  name       = "ecs_task_execution_role_memorydb"
+  policy_arn = aws_iam_policy.ecs_task_execution_role_policy_memorydb.arn
+  roles      = [aws_iam_role.ecs_task_execution_role_back.name]
 }
-
-
-resource "aws_iam_role" "ecs_task_execution_role_back" {
-  name               = "ecs-staging-execution-role-back"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role_back.json
+resource "aws_iam_policy_attachment" "ecs_task_execution_role_redis" {
+  name       = "ecs_task_execution_role_redis"
+  policy_arn = aws_iam_policy.redis_connect_policy.arn
+  roles      = [aws_iam_role.ecs_task_execution_role_back.name]
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_back" {
@@ -598,13 +635,18 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_back" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_role" "ecs_task_execution_role_back" {
+  name               = "ecs-staging-execution-role-back"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role_back.json
+}
+
 resource "aws_ecs_task_definition" "back" {
   family                   = "back-task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role_back.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  cpu                      = var.fargate_cpu_b
+  memory                   = var.fargate_memory_b
   container_definitions    = data.template_file.back.rendered
   
 }
@@ -617,9 +659,10 @@ resource "aws_ecs_service" "back" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups  = [aws_security_group.back_ecs_tasks.id]
-    subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id)
+    security_groups  = [aws_security_group.ecs_tasks.id]
+    subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
     assign_public_ip = true
+
   }
 
   load_balancer {
@@ -628,27 +671,125 @@ resource "aws_ecs_service" "back" {
     container_port   = var.back_port
   }
 
-  depends_on = [aws_iam_role_policy_attachment.redis_access_attachment, aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back,aws_memorydb_cluster.redis_cluster]
+  depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back,aws_memorydb_cluster.redis_cluster]
 }
 
+
+# # ---------------------------------------------------------------------------------------------------
+# #                                           ECS cluster-redis
+# # ---------------------------------------------------------------------------------------------------
+
+# resource "aws_ecs_cluster" "redis" {
+#   name = "devops-exersice"
+# }
+
+# data "template_file" "redis" {
+#   template = file("./templates/ecs/redis.json.tpl")
+
+#   vars = {
+#     redis_image       = var.redis_image
+#     redis_port        = var.redis_port
+#     fargate_cpu       = var.fargate_cpu
+#     fargate_memory    = var.fargate_memory
+#     aws_region        = var.aws_region
+#   }
+# }
+
+# data "aws_iam_policy_document" "ecs_task_execution_role_redis" {
+#   version = "2012-10-17"
+#   statement {
+#     sid     = ""
+#     effect  = "Allow"
+#     actions = ["sts:AssumeRole"]
+
+#     principals {
+#       type        = "Service"
+#       identifiers = ["ecs-tasks.amazonaws.com"]
+#     }
+#   }
+# }
+
+
+# resource "aws_iam_role" "ecs_task_execution_role_redis" {
+#   name               = "ecs-staging-execution-role-redis"
+#   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role_redis.json
+# }
+
+# resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_redis" {
+#   role       = aws_iam_role.ecs_task_execution_role_redis.name
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+# }
+
+# resource "aws_ecs_task_definition" "redis" {
+#   family                   = "redis-task"
+#   execution_role_arn       = aws_iam_role.ecs_task_execution_role_redis.arn
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   cpu                      = var.fargate_cpu
+#   memory                   = var.fargate_memory
+#   container_definitions    = data.template_file.redis.rendered
+  
+# }
+
+# resource "aws_ecs_service" "redis" {
+#   name            = "redis-service"
+#   cluster         = aws_ecs_cluster.redis.id
+#   task_definition = aws_ecs_task_definition.redis.arn
+#   desired_count   = var.redis_count
+#   launch_type     = "FARGATE"
+
+#   network_configuration {
+#     security_groups  = [aws_security_group.ecs_tasks.id]
+#     subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id)
+#     assign_public_ip = true
+#   }
+
+#   load_balancer {
+#     target_group_arn = aws_alb_target_group.back.id
+#     container_name   = "redis"
+#     container_port   = var.redis_port
+#   }
+
+#   depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_redis]
+# }
+
+
 # ---------------------------------------------------------------------------------------------------
-#                                           Memory DB for redis
+#                                           Memory DB for redis \\\\\\\ Elasticache redis
 # ---------------------------------------------------------------------------------------------------
 
 resource "aws_memorydb_cluster" "redis_cluster" {
   acl_name                 = "open-access" 
   name                     = "redis"
   node_type                = "db.t4g.small"
-  num_shards               = 1
-  security_group_ids       = [aws_security_group.back_ecs_tasks.id]
-  snapshot_retention_limit = 1
+  num_shards               = 2
+  security_group_ids       = [aws_security_group.ecs_tasks.id]
+  snapshot_retention_limit = 7
   subnet_group_name        = aws_memorydb_subnet_group.redis_subnet_group.id
+  port                     = 6379
+  tls_enabled              = false
 }
 
 resource "aws_memorydb_subnet_group" "redis_subnet_group" {
   name       = "redis-subnet-group"
   subnet_ids =  concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
 }
+
+
+# resource "aws_elasticache_cluster" "redis" {
+#   cluster_id              = "redis-cluster"
+#   engine                  = "redis"
+#   node_type               = "cache.t2.micro"
+#   num_cache_nodes         = 1
+#   parameter_group_name    = "default.redis5.0"
+#   port                    = 6379
+#   subnet_group_name       = aws_memorydb_subnet_group.redis_subnet_group.id
+#   availability_zone       = var.azs_b[0]
+
+#   tags = {
+#     Name = "redis-cluster"
+#   }
+# }
 
 
 

@@ -49,23 +49,28 @@ variable "back_count" {
 }
 
 
-# variable "redis_image" {
-#   description = "Docker image to run in the ECS cluster"
-#   default     = "ghcr.io/stanisz1/redis:0.34.0"
-# }
+variable "redis_image" {
+  description = "Docker image to run in the ECS cluster"
+  default     = "ghcr.io/stanisz1/redis:0.34.0"
+}
 
-# variable "redis_port" {
-#   description = "Port exposed by the docker image to redirect traffic to"
-#   default     = 6379
-# }
+variable "redis_port" {
+  description = "Port exposed by the docker image to redirect traffic to"
+  default     = 6379
+}
 
-# variable "redis_count" {
-#   description = "Number of docker containers to run"
-#   default     = 1
-# }
+variable "redis_count" {
+  description = "Number of docker containers to run"
+  default     = 1
+}
 
 variable "health_check_path" {
   default = "/"
+}
+
+variable "fargate_cpu_b" {
+  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
+  default     = "1024"
 }
 
 variable "fargate_cpu" {
@@ -78,6 +83,10 @@ variable "fargate_memory" {
   default     = "1024"
 }
 
+variable "fargate_memory_b" {
+  description = "Fargate instance memory to provision (in MiB)"
+  default     = "2048"
+}
 
 variable "cidr" {
   type        = string
@@ -88,7 +97,7 @@ variable "cidr" {
 variable "private_subnet_cidrs_a" {
   type        = list(string)
   description = "Private Subnet CIDR values"
-  default     = ["10.0.10.0/24", "10.0.11.0/24","10.0.12.0/24", ]
+  default     = ["10.0.10.0/24", "10.0.11.0/24", ]
 }
 
 variable "public_subnet_cidrs_a" {
@@ -112,7 +121,7 @@ variable "public_subnet_cidrs_a" {
 variable "private_subnet_cidrs_b" {
   type        = list(string)
   description = "Private Subnet CIDR values"
-  default     = ["10.0.20.0/24", "10.0.21.0/24","10.0.22.0/24", ]
+  default     = ["10.0.20.0/24", "10.0.21.0/24", ]
 }
 
 variable "public_subnet_cidrs_b" {

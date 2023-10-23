@@ -12,3 +12,12 @@ output "cluster_endpoint_address" {
   description = "DNS hostname of the cluster configuration endpoint"
   value       = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].address
 }
+
+output "cluster_endpoint_port" {
+  description = "Port number that the cluster configuration endpoint is listening on"
+  value       = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].port
+}
+
+# output "redis_endpoint" {
+#   value = aws_elasticache_cluster.redis.configuration_endpoint
+# }
