@@ -1,4 +1,4 @@
-name: Terraform AWS S3 bucket
+name:  AWS S3 bucket create 
 
 on:
   workflow_dispatch:
