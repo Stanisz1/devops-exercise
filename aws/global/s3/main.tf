@@ -5,15 +5,7 @@ terraform {
       version = "~>3.27"
     }
   }
-
   required_version = ">=0.14.9"
-
-    backend "s3" {
-    bucket         = "devops-exersice-staniz-s3"
-    key            = "devops-exersice-staniz-s3/global/s3/terraform.tfstate"
-    region         = "eu-north-1"
-    encrypt        = true
-  }
 }
 provider "aws" {
   region = "eu-north-1"
