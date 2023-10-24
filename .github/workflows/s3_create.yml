@@ -72,28 +72,15 @@ jobs:
 
       working-directory: ${{ github.event.inputs.tfpath }}
 
-    - name: Terraform init migrate-state
+    - name: Terraform init migrate-state 
       run: |
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
         echo "** Running Terraform Migrate**"
-        terraform init -migrate-state
+        terraform init -migrate-state -auto-approve
 
       working-directory: ${{ github.event.inputs.tfpath }}  
 
-    # - name: Terraform Destroy
-    #   run: |
-    #     echo `pwd`
-    #     echo "tfpath ${{ github.event.inputs.tfpath }}"
-    #     git config user.name "$GITHUB_ACTOR"
-    #     sed -i '/backend "s3" {/,/}/d' main.tf
-    #     git add .
-    #     git commit -m "Delete s3 bucket tf.state from aws"
-    #     git push origin master
-    #     echo "** Running Terraform Destroy**"
-    #     terraform plan -destroy
-    #     terraform destroy -auto-approve
-    #   working-directory: ${{ github.event.inputs.tfpath }}
 
 
 
