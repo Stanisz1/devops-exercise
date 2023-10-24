@@ -46,21 +46,6 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   restrict_public_buckets = true
 }
 
-
-# terraform {
-# }
-
-# terraform {
-#     key            = "${var.s3_key}"
-#     region         = "${var.s3_region}"
-
-#     encrypt        = true
-#   }
-# }
-
-
- terraform {
- }
  terraform {
    backend "s3" {
     bucket         = "devops-exersice-staniz-s3"
