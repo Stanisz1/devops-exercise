@@ -1,0 +1,67 @@
+name: back
+
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore: 
+      - '*'
+    paths:
+      - 'back/'
+  workflow_dispatch:
+    # on:
+    #   workflow_dispatch:
+    
+    # concurrency:
+    #   group: destroy_demo
+    #   cancel-in-progress: true
+  
+jobs:
+
+  bump-version:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@master
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO_OWNER: ${{ github.repository_owner }}
+    
+    - name: version-tag
+      id: tag
+      uses: anothrNick/github-tag-action@master 
+      env:
+          VERBOSE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs: 
+        tag: ${{ steps.tag.outputs.tag }}
+    
+
+  build-docker:
+    needs: [bump-version]
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3.3.0
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2.1.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.ACTION_TOKEN }}
+    
+
+          
+    - name: build back
+      working-directory: back
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+          repository_owner=${{ github.repository_owner }}
+          repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
+          docker build  . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} 
+          docker push ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }}
+          docker push ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }}
+      
