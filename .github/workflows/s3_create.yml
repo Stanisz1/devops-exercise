@@ -77,7 +77,7 @@ jobs:
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
         echo "** Running Terraform Migrate**"
-        terraform init -migrate-state -auto-approve
+        terraform init -migrate-state -force-copy
 
       working-directory: ${{ github.event.inputs.tfpath }}  
 
