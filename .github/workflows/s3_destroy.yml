@@ -39,6 +39,8 @@ jobs:
         git add .
         git commit -m "Delete s3 bucket tf.state from aws"
         git push origin master
+        echo "** Running Terraform Migrate**"
+        terraform init -migrate-state -auto-approve
         echo "** Running Terraform Destroy**"
         terraform plan -destroy
         terraform destroy -auto-approve
