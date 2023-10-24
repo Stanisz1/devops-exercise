@@ -83,10 +83,10 @@ jobs:
 
     - name: Terraform Destroy
       run: |
-        git config user.name "$GITHUB_ACTOR"
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
-        sed -i '/terraform { backend /,/}/d' main.tf
+        git config user.name "$GITHUB_ACTOR"
+        sed -i '/backend "s3" {/,/}/d' main.tf
         git add .
         git commit -m "Delete s3 bucket tf.state from aws"
         git push origin master
