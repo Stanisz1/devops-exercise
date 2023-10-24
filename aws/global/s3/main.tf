@@ -48,18 +48,9 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
 
 
 # terraform {
-#   backend "s3" {
-#     bucket         = "devops-exersice-staniz-s3"
-#     key            = "devops-exersice-staniz-s3/global/s3/terraform.tfstate"
-#     region         = "eu-north-1"
-
-#     encrypt        = true
-#   }
 # }
 
 # terraform {
-#   backend "s3" {
-#     bucket         = "${var.s3_bucket}"
 #     key            = "${var.s3_key}"
 #     region         = "${var.s3_region}"
 
@@ -69,10 +60,4 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
 
 
  terraform {
-   backend "s3" {
-    bucket         = "devops-exersice-staniz-s3"
-    key            = "devops-exersice-staniz-s3/global/s3/terraform.tfstate"
-    region         = "eu-north-1"
-    encrypt        = true
-  }
  }
