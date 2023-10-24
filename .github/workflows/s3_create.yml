@@ -58,7 +58,7 @@ jobs:
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
         git config user.name "$GITHUB_ACTOR"
-        echo ' terraform {' >> main.tf
+        echo 'terraform {' >> main.tf
         echo '   backend "s3" {' >> main.tf
         echo '    bucket         = "devops-exersice-staniz-s3"' >> main.tf
         echo '    key            = "devops-exersice-staniz-s3/global/s3/terraform.tfstate"' >> main.tf
