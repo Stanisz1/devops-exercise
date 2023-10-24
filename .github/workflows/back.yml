@@ -54,7 +54,6 @@ jobs:
         password: ${{ secrets.ACTION_TOKEN }}
     
 
-          
     - name: build back
       working-directory: back
       if: ${{ github.event_name != 'pull_request' }}
