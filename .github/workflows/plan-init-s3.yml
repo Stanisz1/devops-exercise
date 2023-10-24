@@ -54,7 +54,7 @@ on:
       tfpath:
         description: 'aws/global/s3/'
         required: false
-        default: 'aws/create_s3_bucket'
+        default: 'aws/global/s3/'
 
 
 jobs:
