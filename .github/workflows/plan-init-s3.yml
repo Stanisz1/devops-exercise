@@ -83,6 +83,7 @@ jobs:
 
     - name: Terraform Destroy
       run: |
+        git config user.name "$GITHUB_ACTOR"
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
         sed -i '/terraform { backend /,/}/d' main.tf
