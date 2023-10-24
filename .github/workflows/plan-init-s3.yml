@@ -58,6 +58,7 @@ on:
 
 
 jobs:
+  
   tf_code_check:
     name: Terraform Validation and Build
     runs-on: ubuntu-latest
@@ -76,7 +77,7 @@ jobs:
     - name: Setup Terraform CLI
       uses: hashicorp/setup-terraform@v2.0.2
 
-    - name: Terraform init, plan and apply
+    - name: Terraform init, plan 
       run: |
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
@@ -86,15 +87,52 @@ jobs:
         echo "** Running Terraform Validate**"
         terraform validate
 
-        echo "** Running Terraform Plan**"
-        terraform plan
 
-#        echo "** Running Terraform Apply**"
-#        terraform apply -auto-approve
       working-directory: ${{ github.event.inputs.tfpath }}
-    - name: Terraform Destroy
+
+    - name: Terraform apply 
       run: |
-        echo "** Running Terraform Destroy**"
-        terraform plan -destroy
-#        terraform destroy -auto-approve
+        echo `pwd`
+        echo "tfpath ${{ github.event.inputs.tfpath }}"
+       
+        echo "** Running Terraform Apply**"
+        terraform apply -auto-approve
+
       working-directory: ${{ github.event.inputs.tfpath }}
+
+    - name: Terraform add backend
+      run: |
+        echo `pwd`
+        echo "tfpath ${{ github.event.inputs.tfpath }}"
+        git config user.name "$GITHUB_ACTOR"
+        echo ' terraform {' >> main.tf
+        echo '   backend "s3" {' >> main.tf
+        echo '    bucket         = "devops-exersice-staniz-s3"' >> main.tf
+        echo '    key            = "devops-exersice-staniz-s3/global/s3/terraform.tfstate"' >> main.tf
+        echo '    region         = "eu-north-1"' >> main.tf
+        echo '    encrypt        = true' >> main.tf
+        echo '  }' >> main.tf
+        echo ' }' >> main.tf
+        git add .
+        git commit -m "Update s3 bucket tf.state to aws"
+        git push origin master 
+
+      working-directory: ${{ github.event.inputs.tfpath }}
+
+    - name: Terraform init migrate-state
+      run: |
+        echo `pwd`
+        echo "tfpath ${{ github.event.inputs.tfpath }}"
+        echo "** Running Terraform Migrate**"
+        terraform init -migrate-state
+
+#     - name: Terraform Destroy
+#       run: |
+#         echo "** Running Terraform Destroy**"
+#         terraform plan -destroy
+# #        terraform destroy -auto-approve
+#       working-directory: ${{ github.event.inputs.tfpath }}
+
+
+
+      

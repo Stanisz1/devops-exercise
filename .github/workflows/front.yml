@@ -18,7 +18,7 @@ on:
     #   cancel-in-progress: true
   
 jobs:
-
+  
   bump-version:
     runs-on: ubuntu-20.04
     permissions:
@@ -40,6 +40,13 @@ jobs:
     outputs: 
         tag: ${{ steps.tag.outputs.tag }}
     
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: stefanoeb/eslint-action@1.0.2
+        with:
+          files: front/    
 
   build-docker:
     needs: [bump-version]
