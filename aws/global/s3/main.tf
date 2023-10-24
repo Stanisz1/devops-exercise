@@ -1,15 +1,22 @@
 terraform {
-  required_version = ">= 1.0.0, < 2.0.0"
-
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
+      source = "hashicorp/aws"
+      Version = "~>3.27"
     }
   }
-}
 
+  required_version = ">=0.14.9"
+ 
+    backend "s3" {
+    bucket         = "devops-exersice-staniz-s3"
+    key            = "devops-exersice-staniz-s3/global/s3/terraform.tfstate"
+    region         = "eu-north-1"
+    encrypt        = true
+  }
+}
 provider "aws" {
+  version = "~>3.0"
   region = "eu-north-1"
 }
 
