@@ -10,18 +10,23 @@ on:
     paths:
       - 'aws/global/s3'
   workflow_dispatch:
+
 jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@master
-      - name: 'Terraform Format'
-        uses: hashicorp/terraform-github-actions@master
+        uses: actions/checkout@v2
+
+      - name: 'Terraform Init'
+        uses: hashicorp/setup-terraform@v1
         with:
-          tf_actions_version: 1.6.0
-          tf_actions_subcommand: ['init', 'plan']
+          terraform_version: 0.12.18
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
+      - name: 'Terraform Plan'
+        run: terraform plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
