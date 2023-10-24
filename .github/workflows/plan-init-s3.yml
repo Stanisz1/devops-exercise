@@ -9,6 +9,7 @@ on:
       - '*'
     paths:
       - 'aws/global/s3/'
+  workflow_dispatch:
 
 jobs:
   tf_fmt:
