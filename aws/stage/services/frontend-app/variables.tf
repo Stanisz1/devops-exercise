@@ -20,7 +20,7 @@ variable "az_count" {
 
 variable "front_image" {
   description = "Docker image to run in the ECS cluster"
-  default     = "ghcr.io/stanisz1/front:0.34.0"
+  default     = "ghcr.io/stanisz1/front:latest"
 }
 
 variable "front_port" {
@@ -35,7 +35,7 @@ variable "front_count" {
 
 variable "back_image" {
   description = "Docker image to run in the ECS cluster"
-  default     = "ghcr.io/stanisz1/back:0.34.0"
+  default     = "ghcr.io/stanisz1/back:latest"
 }
 
 variable "back_port" {
@@ -51,7 +51,7 @@ variable "back_count" {
 
 variable "redis_image" {
   description = "Docker image to run in the ECS cluster"
-  default     = "ghcr.io/stanisz1/redis:0.34.0"
+  default     = "ghcr.io/stanisz1/redis:latest"
 }
 
 variable "redis_port" {
