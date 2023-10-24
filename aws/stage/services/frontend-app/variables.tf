@@ -106,18 +106,6 @@ variable "public_subnet_cidrs_a" {
   default     = ["10.0.13.0/24", ]
 }
 
-# variable "database_subnet_cidrs_a" {
-#   type        = list(string)
-#   description = "Public Subnet CIDR values"
-#   default     = ["10.0.13.0/24", ]
-# }
-
-# variable "database_subnet_cidrs_b" {
-#   type        = list(string)
-#   description = "Private Subnet CIDR values"
-#   default     = ["10.0.23.0/24", ]
-# }
-
 variable "private_subnet_cidrs_b" {
   type        = list(string)
   description = "Private Subnet CIDR values"

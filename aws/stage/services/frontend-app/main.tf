@@ -33,7 +33,7 @@ resource "aws_internet_gateway" "igw" {
    Name = var.name_ig
  }
 }
- 
+
 resource "aws_subnet" "private_subnets_a" {
  count             = length(var.private_subnet_cidrs_a)
  vpc_id            = aws_vpc.main.id
@@ -79,31 +79,6 @@ resource "aws_subnet" "public_subnets_b" {
    Name = "Public Subnet ${count.index + 1}"
  }
 }
-
-# resource "aws_subnet" "database_subnets_a" {
-#  count             = length(var.database_subnet_cidrs_a)
-#  vpc_id            = aws_vpc.main.id
-#  cidr_block        = element(var.database_subnet_cidrs_a, count.index)
-#  availability_zone = element(var.azs_a, count.index)
-#  map_public_ip_on_launch = true
- 
-#  tags = {
-#    Name = "Database Subnet ${count.index + 1}"
-#  }
-# }
-
-# resource "aws_subnet" "database_subnets_b" {
-#  count             = length(var.database_subnet_cidrs_b)
-#  vpc_id            = aws_vpc.main.id
-#  cidr_block        = element(var.database_subnet_cidrs_b, count.index)
-#  availability_zone = element(var.azs_b, count.index)
- 
-#  tags = {
-#    Name = "Database Subnet ${count.index + 1}"
-#  }
-# }
-
-
 
 resource "aws_eip" "nat_a" {
   vpc = true
@@ -190,9 +165,6 @@ resource "aws_route_table" "public_a" {
   }
 }
 
-
-
-
 resource "aws_route_table" "public_b" {
   vpc_id = aws_vpc.main.id
 
@@ -206,31 +178,6 @@ resource "aws_route_table" "public_b" {
   }
 }
 
-# resource "aws_route_table" "common_a" {
-#   vpc_id = aws_vpc.main.id
-
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.igw.id
-#   }
-
-#   tags = {
-#     Name = "common-a"
-#   }
-# }
-
-# resource "aws_route_table" "common_b" {
-#   vpc_id = aws_vpc.main.id
-
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.igw.id
-#   }
-
-#   tags = {
-#     Name = "common-b"
-#   }
-# }
 
 resource "aws_route_table_association" "private_a" {
  count = length(var.private_subnet_cidrs_a)
@@ -255,21 +202,6 @@ resource "aws_route_table_association" "public_b" {
  subnet_id      = element(aws_subnet.public_subnets_b[*].id, count.index)
  route_table_id = element(aws_route_table.public_b.*.id, count.index)
 }
-
-# resource "aws_route_table_association" "common_a" {
-#   count = length(var.public_subnet_cidrs_a)
-
-#   subnet_id      = element(aws_subnet.public_subnets_a[*].id, count.index)
-#   route_table_id = element(aws_route_table.common_a.*.id, count.index)
-# }
-
-# resource "aws_route_table_association" "common_b" {
-#   count = length(var.public_subnet_cidrs_b)
-
-#   subnet_id      = element(aws_subnet.public_subnets_b[*].id, count.index)
-#   route_table_id = element(aws_route_table.common_b.*.id, count.index)
-# }
-
 
 # ---------------------------------------------------------------------------------------------------
 #                                            SECIRITY GROUP
@@ -303,8 +235,8 @@ resource "aws_security_group" "lb" {
     all_ips      = ["0.0.0.0/0"]
   }
 
-# Traffic to the ECS cluster should only come from the ALB
 
+# Traffic to the ECS cluster should only come from the ALB
 
 resource "aws_security_group" "ecs_tasks" {
   name        = "ecs-tasks-security-group"
@@ -335,22 +267,6 @@ resource "aws_security_group" "ecs_tasks" {
     to_port         = 80
     security_groups = [aws_security_group.lb.id]
   }
-
-  # ingress {
-  #   protocol    = "-1"
-  #   from_port   = 0
-  #   to_port     = 0
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-
-  # ingress {
-  #   description      = "SSH"
-  #   from_port        = 22
-  #   to_port          = 22
-  #   protocol         = "tcp"
-  #   cidr_blocks      = ["0.0.0.0/0"]
-  #   security_groups = [aws_security_group.lb.id]
-  # }
 
   egress {
     protocol    = "-1"
@@ -472,7 +388,6 @@ data "template_file" "front" {
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory 
     aws_region     = var.aws_region
-    # aws_alb_dns_name = aws_alb.main.dns_name
   }
 }
 
@@ -536,7 +451,6 @@ resource "aws_ecs_service" "front" {
 #                                           ECS cluster-back
 # ---------------------------------------------------------------------------------------------------
 
-
 resource "aws_ecs_cluster" "back" {
   name = "devops-exersice"
 }
@@ -550,10 +464,7 @@ data "template_file" "back" {
     fargate_cpu_b    = var.fargate_cpu_b
     fargate_memory_b = var.fargate_memory_b
     aws_region       = var.aws_region
-    # aws_redis        = aws_ecs_service.redis.id
-    # # redis_endpoint   = aws_elasticache_cluster.redis.configuration_endpoint
     aws_redis        = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].address
-    # redis_port       = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].port
   }
 }
 data "aws_iam_policy_document" "ecs_task_execution_role_back" {
@@ -675,85 +586,6 @@ resource "aws_ecs_service" "back" {
 }
 
 
-# # ---------------------------------------------------------------------------------------------------
-# #                                           ECS cluster-redis
-# # ---------------------------------------------------------------------------------------------------
-
-# resource "aws_ecs_cluster" "redis" {
-#   name = "devops-exersice"
-# }
-
-# data "template_file" "redis" {
-#   template = file("./templates/ecs/redis.json.tpl")
-
-#   vars = {
-#     redis_image       = var.redis_image
-#     redis_port        = var.redis_port
-#     fargate_cpu       = var.fargate_cpu
-#     fargate_memory    = var.fargate_memory
-#     aws_region        = var.aws_region
-#   }
-# }
-
-# data "aws_iam_policy_document" "ecs_task_execution_role_redis" {
-#   version = "2012-10-17"
-#   statement {
-#     sid     = ""
-#     effect  = "Allow"
-#     actions = ["sts:AssumeRole"]
-
-#     principals {
-#       type        = "Service"
-#       identifiers = ["ecs-tasks.amazonaws.com"]
-#     }
-#   }
-# }
-
-
-# resource "aws_iam_role" "ecs_task_execution_role_redis" {
-#   name               = "ecs-staging-execution-role-redis"
-#   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role_redis.json
-# }
-
-# resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_redis" {
-#   role       = aws_iam_role.ecs_task_execution_role_redis.name
-#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-# }
-
-# resource "aws_ecs_task_definition" "redis" {
-#   family                   = "redis-task"
-#   execution_role_arn       = aws_iam_role.ecs_task_execution_role_redis.arn
-#   network_mode             = "awsvpc"
-#   requires_compatibilities = ["FARGATE"]
-#   cpu                      = var.fargate_cpu
-#   memory                   = var.fargate_memory
-#   container_definitions    = data.template_file.redis.rendered
-  
-# }
-
-# resource "aws_ecs_service" "redis" {
-#   name            = "redis-service"
-#   cluster         = aws_ecs_cluster.redis.id
-#   task_definition = aws_ecs_task_definition.redis.arn
-#   desired_count   = var.redis_count
-#   launch_type     = "FARGATE"
-
-#   network_configuration {
-#     security_groups  = [aws_security_group.ecs_tasks.id]
-#     subnets          = concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id)
-#     assign_public_ip = true
-#   }
-
-#   load_balancer {
-#     target_group_arn = aws_alb_target_group.back.id
-#     container_name   = "redis"
-#     container_port   = var.redis_port
-#   }
-
-#   depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_redis]
-# }
-
-
 # ---------------------------------------------------------------------------------------------------
 #                                           Memory DB for redis \\\\\\\ Elasticache redis
 # ---------------------------------------------------------------------------------------------------
@@ -776,20 +608,7 @@ resource "aws_memorydb_subnet_group" "redis_subnet_group" {
 }
 
 
-# resource "aws_elasticache_cluster" "redis" {
-#   cluster_id              = "redis-cluster"
-#   engine                  = "redis"
-#   node_type               = "cache.t2.micro"
-#   num_cache_nodes         = 1
-#   parameter_group_name    = "default.redis5.0"
-#   port                    = 6379
-#   subnet_group_name       = aws_memorydb_subnet_group.redis_subnet_group.id
-#   availability_zone       = var.azs_b[0]
 
-#   tags = {
-#     Name = "redis-cluster"
-#   }
-# }
 
 
 
