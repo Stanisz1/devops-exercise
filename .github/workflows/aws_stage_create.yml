@@ -4,17 +4,16 @@ on:
   push:
     branches:
       - master
-    tags-ignore: 
-      - '*'
+    
     paths:
-      - 'aws/stage/services/frontend-app/*'
+      - 'aws/stage/services/frontend-app/**'
   workflow_dispatch:
     # Inputs the workflow expects.
     inputs:
       tfpath:
-        description: 'aws/stage/services/frontend-app/'
+        description: 'aws/stage/services/frontend-app/**'
         required: false
-        default: 'aws/stage/services/frontend-app/'
+        default: 'aws/stage/services/frontend-app/**'
 
 
 jobs:
