@@ -8,7 +8,7 @@
     "environment": [
       {
         "name": "REDIS_SERVER",
-        "value": "${aws_redis}:${redis_port}"
+        "value": "${aws_redis}:6379"
       }
     ],
     "logConfiguration": {
