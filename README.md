@@ -1,29 +1,19 @@
-# DevOps Exercise
-
-## Process
-
-- Fork this repository to your personal GitHub account. If you prefer, you may create your own private repository instead.
-- Complete your project and push your code to your repository.
-- Send a link to your public repo or invite [@joeles](https://github.com/joeles) and [@ShawnConn](https://github.com/ShawnConn) as collaborators if it is private.
-- We will schedule the final interview to review and discuss.
-
-## Project Requirements
-
 ### Overview
-
+______________________________________________________________________________________________________
 Write **Terraform** that can be used to deploy the three-tiered "click counter" application contained in this repository. Use the `front`, `back`, and `redis` images detailed below.
 
 - Use Dockerfile in the `front` directory of this repo to build `front` image
 - Use Dockerfile in the `back` directory of this repo to build `back` image
 - Push built images to free container registry like Dockerhub, Github Packages, or AWS ECR
 - Use any version of `redis` from Dockerhub
-- Use AWS free-tier option(s) like **EC2** and/or **Lambda + API Gateway** for running containers
+- Use AWS free-tier option(s) like **ECS fargate ** and/or **Lambda + API Gateway** for running containers
 - Use **Terraform**, your choice of CI/CD solution, and/or any additional scripting to deploy the containers
+- Use  **AWS Memory DB for redis**
 
 If you have questions or something seems "not right", please reach out via email.
 
 ### Application details
-
+______________________________________________________________________________________________________
 - `back` app
     - Requires these ENV vars:
         - `REDIS_SERVER` - Address of Redis container in the form of `<host>:<port>`
@@ -51,24 +41,39 @@ If you have questions or something seems "not right", please reach out via email
         - `6379`
 
 ### Extra credit
-
+______________________________________________________________________________________________________
 - Hide the `3000`/`4000` ports and make the service available over port `80` using the method of your choice
 - Add healthchecks to `front` and `back` apps using the ping endpoint each app provides
 - Implement basic security measures
 - Add DNS or other customizations
 
-### Example
-
-https://devops-exercise.tblk.us
-
-![image](https://user-images.githubusercontent.com/68586/162465910-892c2e8d-be41-4852-87c7-9ead1ca2e966.png)
+- Do the same using docker compose, minikube
 
 
-## Interview
+### Actions to perform
+______________________________________________________________________________________________________
+First, you should start by setting up your AWS profile and obtaining the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. These credentials are essential for adding a secret to your GitHub repository. Once you have your AWS access credentials, proceed to create your GitHub repository. Afterward, include my repository within yours.
 
-During your online interview, we will:
+Once you've completed the initial steps mentioned above, to fulfill the top-priority task, navigate to your GitHub Actions to execute the following workflows:
+- [Github_actions](.github/workflows/#github_actions)  `baсk`,`front`,`S3 create`, and `aws_stage_create`
 
-- Walk through your solution and use it to deploy the application
-- Discuss any challenges and successes of your implementation
-- Cover additional questions, both technical and otherwise
-- Answer any questions you may have
+During the execution of the final workflow, you will receive output variables, such as alb_hostname, for example: `main-load-balancer-1765173796.eu-west-1.elb.amazonaws.com` This is your endpoint for the front-end application.
+
+In this manner, you will successfully complete the task.
+
+Don't forget to run workflows aws_stage_destroy , s3_destroy to delete all of the above
+
+### Performing еxtra credit
+______________________________________________________________________________________________________
+to use docker compose, just go to the main directory and follow these steps.
+
+`docker compose build`
+`docker compose up -d`
+______________________________________________________________________________________________________
+to use minikube
+
+go to the terraform directory - [Terraform](terraform/#terraform)
+and execute :
+`terraform init`
+`terraform apply`
+
