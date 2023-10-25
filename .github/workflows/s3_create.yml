@@ -58,7 +58,9 @@ jobs:
       run: |
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
+        
         git config user.name "$GITHUB_ACTOR"
+
         sed -i '/backend "s3" {/,/ }/ s/^# //' main.tf
         git add .
         git commit -m "Update s3 bucket tf.state to aws"
