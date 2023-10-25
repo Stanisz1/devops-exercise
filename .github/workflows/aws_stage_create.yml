@@ -7,7 +7,7 @@ on:
     tags-ignore: 
       - '*'
     paths:
-      - 'aws/stage/services/frontend-app/*'
+      - 'aws/stage/services/frontend-app/**'
   workflow_dispatch:
     # Inputs the workflow expects.
     inputs:
