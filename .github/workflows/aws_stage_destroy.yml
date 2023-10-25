@@ -34,6 +34,9 @@ jobs:
       run: |
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
+        
+        echo "** Running Terraform Init**"
+        terraform init
 
         echo "** Running Terraform Plan**"
         terraform plan -destroy
