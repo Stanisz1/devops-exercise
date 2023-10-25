@@ -40,13 +40,14 @@ jobs:
     outputs: 
         tag: ${{ steps.tag.outputs.tag }}
     
-  eslint:
-    runs-on: ubuntu-latest
+  lint-test:
+    needs: [bump-version, build-docker]
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v1
-      - uses: stefanoeb/eslint-action@1.0.2
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          files: back/    
+          fetch-depth: 0
 
   build-docker:
     needs: [bump-version]
@@ -67,7 +68,8 @@ jobs:
       run: |
           repository_owner=${{ github.repository_owner }}
           repository_owner_lowercase=$(echo "$repository_owner" | tr '[:upper:]' '[:lower:]')
-          docker build  . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} 
+          docker build . -f Dockerfile -t ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }} -t ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }} -t ghcr.io/${repository_owner_lowercase}/back:latest
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ github.sha }}
           docker push ghcr.io/${repository_owner_lowercase}/back:${{ needs.bump-version.outputs.tag }}
+          docker push ghcr.io/${repository_owner_lowercase}/back:latest
       
