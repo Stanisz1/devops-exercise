@@ -8,7 +8,7 @@
     "environment": [
       {
         "name": "REDIS_SERVER",
-        "value": "redis.gwxv79.clustercfg.memorydb.eu-north-1.amazonaws.com:6379"
+        "value": "${aws_redis}:${aws_redis_port}"
       }
     ],
     "logConfiguration": {
