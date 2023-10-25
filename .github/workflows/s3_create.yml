@@ -27,6 +27,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-north-1
+
     - name: Setup Terraform CLI
       uses: hashicorp/setup-terraform@v2.0.2
 
@@ -58,7 +59,7 @@ jobs:
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
         git config user.name "$GITHUB_ACTOR"
-        sed -i '/backend "s3" {/,/}/ s/^# //' main.tf
+        sed -i '/backend "s3" {/,/ }/ s/^  # //' main.tf
         git add .
         git commit -m "Update s3 bucket tf.state to aws"
         git push 
