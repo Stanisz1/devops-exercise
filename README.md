@@ -52,12 +52,18 @@ ________________________________________________________________________________
 
 ### Actions to perform
 ______________________________________________________________________________________________________
-First, you should start by setting up your AWS profile and obtaining the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. These credentials are essential for adding a secret to your GitHub repository. Once you have your AWS access credentials, proceed to create your GitHub repository. Afterward, include my repository within yours.
+First, you should start by setting up your AWS profile and obtaining the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. 
+These credentials are essential for adding a secret to your GitHub repository. Once you have your AWS access credentials,
+proceed to create your GitHub repository. Afterward, include my repository within yours.
 
-Once you've completed the initial steps mentioned above, to fulfill the top-priority task, navigate to your GitHub Actions to execute the following workflows:
-- [Github_actions](.github/workflows/#github_actions)  `baсk`,`front`,`S3 create`, and `aws_stage_create`
+Once you've completed the initial steps mentioned above, to fulfill the top-priority task, navigate to your 
+GitHub Actions to execute the following workflows:
+- [Github_actions](.github/workflows/#github_actions)
+- `baсk`,`front`,`S3 create`, and `aws_stage_create`
 
-During the execution of the final workflow, you will receive output variables, such as alb_hostname, for example: `main-load-balancer-1765173796.eu-west-1.elb.amazonaws.com` This is your endpoint for the front-end application.
+During the execution of the final workflow, you will receive output variables, such as alb_hostname, 
+for example: `main-load-balancer-1765173796.eu-west-1.elb.amazonaws.com`
+This is your endpoint for the front-end application.
 
 In this manner, you will successfully complete the task.
 
@@ -67,13 +73,15 @@ Don't forget to run workflows aws_stage_destroy , s3_destroy to delete all of th
 ______________________________________________________________________________________________________
 to use docker compose, just go to the main directory and follow these steps.
 
-`docker compose build`
-`docker compose up -d`
+-`docker compose build`
+
+-`docker compose up -d`
 ______________________________________________________________________________________________________
 to use minikube
 
 go to the terraform directory - [Terraform](terraform/#terraform)
 and execute :
-`terraform init`
-`terraform apply`
+-`terraform init`
+
+-`terraform apply`
 
