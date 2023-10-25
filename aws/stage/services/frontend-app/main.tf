@@ -599,7 +599,7 @@ resource "aws_memorydb_cluster" "redis_cluster" {
   snapshot_retention_limit = 7
   subnet_group_name        = aws_memorydb_subnet_group.redis_subnet_group.id
   port                     = 6379
-  tls_enabled              = true
+  tls_enabled              = false
 }
 
 resource "aws_memorydb_subnet_group" "redis_subnet_group" {
