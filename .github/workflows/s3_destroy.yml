@@ -45,7 +45,7 @@ jobs:
         sed -i '/backend "s3" {/,/}/ s/^/# &/' main.tf
         git add .
         git commit -m "Delete s3 bucket tf.state from aws"
-        git push origin master
+        git push 
       working-directory: ${{ github.event.inputs.tfpath }}
 
 
