@@ -607,11 +607,6 @@ resource "aws_memorydb_subnet_group" "redis_subnet_group" {
   subnet_ids =  concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id,aws_subnet.public_subnets_a[*].id, aws_subnet.public_subnets_b[*].id)
 }
 
-
-
-
-
-
 terraform {
   backend "s3" {
     bucket         = "devops-exersice-staniz-s3"

@@ -45,3 +45,12 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+terraform {
+  # backend "s3" {
+  #   bucket         = "devops-exersice-staniz-s3"
+  #   key            = "devops-exersice-staniz-s3/global/s3/terraform.tfstate"
+  #   region         = "eu-north-1"
+  #   encrypt        = true
+  # }
+}
