@@ -1,6 +1,13 @@
 name:  AWS Stage create 
 
 on:
+  push:
+    branches:
+      - master
+    tags-ignore: 
+      - '*'
+    paths:
+      - 'aws/stage/services/frontend-app/'
   workflow_dispatch:
     # Inputs the workflow expects.
     inputs:
