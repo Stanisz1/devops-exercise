@@ -29,8 +29,15 @@ jobs:
         aws-region: eu-north-1
     - name: Setup Terraform CLI
       uses: hashicorp/setup-terraform@v2.0.2
- 
-    - name: Terraform Destroy
+    
+    - name: Terraform init
+      run: |
+        echo `pwd`
+        echo "tfpath ${{ github.event.inputs.tfpath }}"
+        echo "** Running Terraform Init**"
+        terraform init
+
+    - name: add comment
       run: |
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
@@ -39,9 +46,15 @@ jobs:
         git add .
         git commit -m "Delete s3 bucket tf.state from aws"
         git push origin master
+      working-directory: ${{ github.event.inputs.tfpath }}
+
+
+    - name: Terraform destroy
+      run: |
+        echo `pwd`
+        echo "tfpath ${{ github.event.inputs.tfpath }}"
         echo "** Running Terraform Migrate**"
         terraform init -migrate-state -force-copy
         echo "** Running Terraform Destroy**"
         terraform plan -destroy
         terraform destroy -auto-approve
-      working-directory: ${{ github.event.inputs.tfpath }}
