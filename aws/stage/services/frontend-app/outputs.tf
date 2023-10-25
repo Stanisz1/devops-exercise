@@ -18,6 +18,7 @@ output "cluster_endpoint_port" {
   value       = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].port
 }
 
-# output "redis_endpoint" {
-#   value = aws_elasticache_cluster.redis.configuration_endpoint
-# }
+output "account_id" {
+  value = local.account_id
+}
+

@@ -14,6 +14,10 @@ provider "aws" {
 
 }
 
+locals {
+    account_id = data.aws_caller_identity.current.account_id
+}
+
 # ---------------------------------------------------------------------------------------------------
 #                                                   VPC
 # ---------------------------------------------------------------------------------------------------
@@ -465,7 +469,7 @@ data "template_file" "back" {
     fargate_memory_b = var.fargate_memory_b
     aws_region       = var.aws_region
     aws_redis        = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].address
-    redis_port       = aws_memorydb_cluster.redis_cluster.cluster_endpoint[0].port
+    redis_port       = 
   }
 }
 data "aws_iam_policy_document" "ecs_task_execution_role_back" {
@@ -491,7 +495,7 @@ resource "aws_iam_policy" "redis_connect_policy" {
       {
         Action   = "redis:Connect",
         Effect   = "Allow",
-        Resource = "arn:aws:memorydb:eu-north-1:${local.aws_account_id}:cluster/redis"
+        Resource = "arn:aws:memorydb:eu-north-1:${local.account_id}:cluster/redis"
       }
     ]
   })
