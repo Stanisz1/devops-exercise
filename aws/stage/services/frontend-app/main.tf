@@ -490,7 +490,7 @@ resource "aws_iam_policy" "redis_connect_policy" {
       {
         Action   = "redis:Connect",
         Effect   = "Allow",
-        Resource = "arn:aws:memorydb:${data.aws_region.current.name}:${local.aws_account_id}:cluster/redis"
+        Resource = "arn:aws:memorydb:eu-north-1:${local.aws_account_id}:cluster/redis"
       }
     ]
   })
@@ -587,7 +587,7 @@ resource "aws_ecs_service" "back" {
 
 
 # ---------------------------------------------------------------------------------------------------
-#                                           Memory DB for redis \\\\\\\ Elasticache redis
+#                                           Memory DB for redis 
 # ---------------------------------------------------------------------------------------------------
 
 resource "aws_memorydb_cluster" "redis_cluster" {
