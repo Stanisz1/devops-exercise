@@ -444,7 +444,7 @@ resource "aws_ecs_service" "front" {
     container_port   = var.front_port
   }
 
-  depends_on = [aws_alb_listener.main_end, aws_iam_role_policy_attachment.ecs_task_execution_role,aws_ecs_service.back]
+  depends_on = [aws_alb_listener.main_end, aws_iam_role_policy_attachment.ecs_task_execution_role, aws_ecs_service.back]
 }
 
 # ---------------------------------------------------------------------------------------------------
@@ -582,7 +582,7 @@ resource "aws_ecs_service" "back" {
     container_port   = var.back_port
   }
 
-  depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back,aws_memorydb_cluster.redis_cluster]
+  depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back, aws_memorydb_cluster.redis_cluster]
 }
 
 
@@ -612,7 +612,6 @@ terraform {
     bucket         = "devops-exersice-staniz-s3"
     key            = "devops-exersice-staniz-s3/stage/services/terraform.tfstate"
     region         = "eu-north-1"
-
     encrypt        = true
   }
 }
