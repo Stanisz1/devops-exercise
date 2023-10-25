@@ -51,7 +51,8 @@ jobs:
       run: |
         echo `pwd`
         echo "tfpath ${{ github.event.inputs.tfpath }}"
-        git config user.name "$GITHUB_ACTOR"
+        git config user.name ${{ github.actor }}
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         sed -i '/backend "s3" {/,/}/ s/^/# &/' main.tf
         git add .
         git commit -m "Delete s3 bucket tf.state from aws"
