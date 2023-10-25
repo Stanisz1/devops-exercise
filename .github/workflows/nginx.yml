@@ -8,7 +8,7 @@ on:
     tags-ignore: 
       - '*'
     paths:
-      - 'nginx/'
+      - 'nginx/**'
   workflow_dispatch:
     # on:
     #   workflow_dispatch:

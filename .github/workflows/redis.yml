@@ -8,7 +8,7 @@ on:
     tags-ignore: 
       - '*'
     paths:
-      - 'redis/'
+      - 'redis/**'
   workflow_dispatch:
     # on:
     #   workflow_dispatch:
