@@ -13,7 +13,7 @@
       {
         "name": "CLIENT_API_URL",
         "value": "http://${client}"
-      },
+      }
     ],
     "logConfiguration": {
       "logDriver": "awslogs",
