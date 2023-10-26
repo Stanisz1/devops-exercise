@@ -605,13 +605,12 @@ resource "aws_memorydb_cluster" "redis_cluster" {
   security_group_ids       = [aws_security_group.ecs_tasks.id]
   snapshot_retention_limit = 7
   subnet_group_name        = aws_memorydb_subnet_group.redis_subnet_group.id
-  # port                     = 6379
   tls_enabled              = false
 }
 
 resource "aws_memorydb_subnet_group" "redis_subnet_group" {
   name       = "redis-subnet-group"
-  subnet_ids =  concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id )
+  subnet_ids =  concat(aws_subnet.private_subnets_b[*].id, aws_subnet.private_subnets_a[*].id)
 }
 
 terraform {
