@@ -605,7 +605,7 @@ resource "aws_memorydb_cluster" "redis_cluster" {
   security_group_ids       = [aws_security_group.ecs_tasks.id]
   snapshot_retention_limit = 7
   subnet_group_name        = aws_memorydb_subnet_group.redis_subnet_group.id
-  port                     = 6379
+  # port                     = 6379
   tls_enabled              = false
 }
 
