@@ -611,7 +611,7 @@ resource "aws_memorydb_cluster" "redis_cluster" {
 
 resource "aws_memorydb_subnet_group" "redis_subnet_group" {
   name       = "redis-subnet-group"
-  subnet_ids =  concat(aws_subnet.private_subnets_b[*].id, aws_subnet.private_subnets_a[*].id)
+  subnet_ids =  concat(aws_subnet.private_subnets_a[*].id, aws_subnet.private_subnets_b[*].id )
 }
 
 terraform {
