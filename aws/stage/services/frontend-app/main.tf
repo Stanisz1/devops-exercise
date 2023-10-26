@@ -392,6 +392,8 @@ data "template_file" "front" {
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory 
     aws_region     = var.aws_region
+    backend        = aws_alb_target_group.back.id
+    client         = aws_alb_target_group.front.id
   }
 }
 
