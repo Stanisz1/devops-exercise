@@ -45,7 +45,7 @@ resource "aws_subnet" "private_subnets_a" {
  availability_zone = element(var.azs_a, count.index)
  
  tags = {
-   Name = "Private Subnet ${count.index + 1}"
+   Name = "Private Subnet ${count.index + 1}-a"
  }
 }
 
@@ -57,7 +57,7 @@ resource "aws_subnet" "public_subnets_a" {
  map_public_ip_on_launch = true
  
  tags = {
-   Name = "Public Subnet ${count.index + 1}"
+   Name = "Public Subnet ${count.index + 1}-a"
  }
 }
 
@@ -68,7 +68,7 @@ resource "aws_subnet" "private_subnets_b" {
  availability_zone = element(var.azs_b, count.index)
  
  tags = {
-   Name = "Private Subnet ${count.index + 1}"
+   Name = "Private Subnet ${count.index + 1}-b"
  }
 }
 
@@ -80,7 +80,7 @@ resource "aws_subnet" "public_subnets_b" {
  map_public_ip_on_launch = true
  
  tags = {
-   Name = "Public Subnet ${count.index + 1}"
+   Name = "Public Subnet ${count.index + 1}-b"
  }
 }
 
