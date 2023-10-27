@@ -45,7 +45,7 @@ variable "back_port" {
 
 variable "back_count" {
   description = "Number of docker containers to run"
-  default     = 1
+  default     = 2
 }
 
 
