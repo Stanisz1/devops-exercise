@@ -601,7 +601,7 @@ resource "aws_memorydb_cluster" "redis_cluster" {
   acl_name                 = "open-access" 
   name                     = "redis"
   node_type                = "db.t4g.small"
-  num_shards               = 1
+  num_shards               = 2
   security_group_ids       = [aws_security_group.ecs_tasks.id]
   snapshot_retention_limit = 7
   subnet_group_name        = aws_memorydb_subnet_group.redis_subnet_group.id
