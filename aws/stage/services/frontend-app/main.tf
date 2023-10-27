@@ -578,7 +578,7 @@ resource "aws_ecs_service" "back" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
-    subnets          = concat(aws_subnet.private_subnets_b[*].id, aws_subnet.private_subnets_a[*].id)
+    subnets          = concat(aws_subnet.private_subnets_b[*].id)
     assign_public_ip = true
 
   }
