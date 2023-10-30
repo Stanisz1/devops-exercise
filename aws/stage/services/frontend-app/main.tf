@@ -280,9 +280,6 @@ resource "aws_security_group" "ecs_tasks" {
   }
 }
 
-
-
-
 # ---------------------------------------------------------------------------------------------------
 #                                            application load balancer
 # ---------------------------------------------------------------------------------------------------
@@ -536,7 +533,6 @@ resource "aws_iam_policy" "ecs_task_execution_role_policy_memorydb" {
   })
 }
 
-
 resource "aws_iam_policy_attachment" "ecs_task_execution_role_memorydb" {
   name       = "ecs_task_execution_role_memorydb"
   policy_arn = aws_iam_policy.ecs_task_execution_role_policy_memorydb.arn
@@ -591,7 +587,6 @@ resource "aws_ecs_service" "back" {
 
   depends_on = [aws_alb_listener.main_end, aws_alb_listener_rule.back, aws_iam_role_policy_attachment.ecs_task_execution_role_back, aws_memorydb_cluster.redis_cluster]
 }
-
 
 # ---------------------------------------------------------------------------------------------------
 #                                           Memory DB for redis 

@@ -68,6 +68,7 @@ jobs:
         git push 
         echo "** Running Terraform Migrate**"
         terraform init -migrate-state -force-copy
+        terraform rm terraform.tfstate
 
       working-directory: ${{ github.event.inputs.tfpath }}
 
